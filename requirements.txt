@@ -1,0 +1,4 @@
+python-binance==0.7.1
+matplotlib==3.0.2
+pandas==0.24.2
+numpy==1.15.4

@@ -14,6 +14,7 @@ from strategy.macd_ema_rsi import MacdEmaRsiStrategy
 from strategy.resistance import ResistanceStrategy
 from strategy.macd_ema import MacdEmaStrategy
 from strategy.indicators import Indicators
+from strategy.macd_ema_ratio import MacEmaRatioStrategy
 
 
 def run_simulation(klines, n_ref, commission):
@@ -32,6 +33,7 @@ def run_simulation(klines, n_ref, commission):
         # action = ResistanceStrategy.decide_action_from_data(klines_ref, previous_price, acquired)
         action = MacdEmaStrategy.decide_action_from_data(klines_ref)
         # action = MacdEmaRsiStrategy.decide_action_from_data(klines_ref)
+        # action = MacEmaRatioStrategy.decide_action_from_data(klines_ref, previous_price, acquired)
 
         if not acquired and action.is_buy():
             acquired = (1 - commission) / price
@@ -89,7 +91,7 @@ def simulate(**kwargs):
     n_ref = 50
     commission = .001
 
-    klines = read_data.read_klines_from_json(file_path='data/binance_klines_XRPUSDT_5m_1525421400000.json')
+    klines = read_data.read_klines_from_json(file_path='data/binance_klines_BTCUSDT_5m_1502942400000.json')
 
     run_simulation(klines, n_ref=n_ref, commission=commission)
 

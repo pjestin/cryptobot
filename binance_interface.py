@@ -107,7 +107,7 @@ def main():
     binance = BinanceInterface()
 
     # Dump klines
-    binance.dump_historical_klines('5m', 'EOSUSDT', '2 years ago', 'now')
+    # binance.dump_historical_klines('1m', 'BTCUSDT', '2 years ago', 'now')
 
     # Create order
     # binance.create_order(is_buy=True, quantity=0.1, currency_pair='BNBETH')

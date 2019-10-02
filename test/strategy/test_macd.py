@@ -6,8 +6,8 @@ import read_data
 
 class MacdStrategyTest(unittest.TestCase):
 
-    TEST_DATA_FILE_1 = 'data/binance_klines_BTCUSDT_1h_1569445200000.json'
-    TEST_DATA_FILE_2 = 'data/binance_klines_BTCUSDT_1h_1569618000000.json'
+    TEST_DATA_FILE_1 = 'test/data/binance_klines_BTCUSDT_1h_1569445200000.json'
+    TEST_DATA_FILE_2 = 'test/data/binance_klines_BTCUSDT_1h_1569618000000.json'
 
     def setUp(self):
         MacdStrategy.MACD_TO_CURRENT_RATIO = 0.

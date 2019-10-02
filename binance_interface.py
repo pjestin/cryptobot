@@ -107,13 +107,13 @@ def main():
     binance = BinanceInterface()
 
     # Dump klines
-    # binance.dump_historical_klines('1m', 'BTCUSDT', '2 years ago', 'now')
+    # binance.dump_historical_klines('1h', 'BTCUSDT', '10 years ago', 'now')
 
     # Create order
     # binance.create_order(is_buy=True, quantity=0.1, currency_pair='BNBETH')
 
     # Figure out time sync
-    # binance.server_time_diff()
+    binance.server_time_diff()
 
 
 if __name__ == '__main__':

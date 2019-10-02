@@ -7,7 +7,6 @@ import numpy as np
 
 class Indicators:
 
-    A = .09
     STOCH_RSI_RANGE = 100
     EMA_1_RANGE = 12
     EMA_2_RANGE = 26
@@ -17,8 +16,11 @@ class Indicators:
 
     @classmethod
     def get_exp_weights(cls, nb_period):
+        if nb_period == 1:
+            return [1.]
         if nb_period not in cls.exp_weights_cache:
-            exp_weights = [math.exp(- k * cls.A) for k in reversed(range(0, nb_period))]
+            A = math.log(1 - 2 / (nb_period + 1))
+            exp_weights = [math.exp(k * A) for k in reversed(range(0, nb_period))]
             cls.exp_weights_cache[nb_period] = [exp_weight / sum(exp_weights) for exp_weight in exp_weights]
         return cls.exp_weights_cache[nb_period]
 

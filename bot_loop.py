@@ -10,6 +10,7 @@ import sys
 from binance_interface import BinanceInterface
 from strategy.macd_rsi import MacdRsiStrategy
 from strategy.macd_ema import MacdEmaStrategy
+from strategy.macd import MacdStrategy
 
 LOG_FILE = 'log/{}.log'
 
@@ -38,24 +39,20 @@ def run(**params):
         i += 1
         begin_time = time.time()
 
-        # Retrieve trade recent history
-        # t, x = binance_interface.get_history(limit=n_ref, currency_pair=currency_pair)
-        # price = x[-1]
-        # action = Strategy.decide_action_from_data(t, x, previous_price, previous_transac_time, time.time(), previous_time)
-
         # Kline history
         klines = binance.get_klines(limit=n_ref, interval=interval, currency_pair=currency_pair)
         
         if klines:
             # action = MacdRsiStrategy.decide_action_from_data(klines)
-            action = MacdEmaStrategy.decide_action_from_data(klines)
+            # action = MacdEmaStrategy.decide_action_from_data(klines)
+            action = MacdStrategy.decide_action_from_data(klines, previous_transac_time)
             logging.debug('Run {}; money: {}; transactions: {}; price ratio to previous: {}' \
                 .format(i, money, nb_transactions, klines[-1].close_price / previous_price))
 
             # Buy or sell
             if not acquired and action.is_buy():
                 nb_transactions += 1
-                previous_transac_time = time.time()
+                previous_transac_time = klines[-1].close_time
                 price = binance.last_price(currency_pair)
                 previous_price = price
                 acquired = (1 - commission) / price
@@ -65,7 +62,7 @@ def run(**params):
                     binance.create_order(is_buy=True, quantity=quantity, currency_pair=currency_pair)
             elif acquired and action.is_sell():
                 nb_transactions += 1
-                previous_transac_time = time.time()
+                previous_transac_time = klines[-1].close_time
                 price = binance.last_price(currency_pair)
                 previous_price = price
                 money += (1 - commission) * acquired * price
@@ -89,6 +86,7 @@ def main():
     parser.add_argument('-q', '--quantity', help='Quantity of target currency to trade')
     parser.add_argument('-i', '--interval', help='Interval of klines')
     parser.add_argument('-v', '--verbose', help='Display more logs', action='store_true')
+    parser.add_argument('-s', '--simulate', help='Do not make order, simulate only', action='store_true')
     parser.add_argument('-a', '--acquired', help='Target currency already acquired')
     args = parser.parse_args()
 
@@ -108,10 +106,10 @@ def main():
         raise ValueError('No currency pair provided')
 
     run(
-        n_ref=50,
+        n_ref=150,
         commission=0.001,
-        period=10.,
-        simulate=False,
+        period=300.,
+        simulate=args.simulate,
         currency_pair=args.currency_pair,
         quantity=float(args.quantity) if args.quantity else 0.,
         interval=args.interval if args.interval else '5m',

@@ -8,16 +8,14 @@ class IndicatorsTest(unittest.TestCase):
         self.x = [-1., 0., 2.5, 3.4, .4, -4.5, -.9, 0., .4]
 
     def test_exp_weights(self):
-        self.assertEqual([], Indicators.get_exp_weights(nb_period=0))
         self.assertEqual([1.], Indicators.get_exp_weights(nb_period=1))
-        self.assertEqual([0.47751517520819986, 0.5224848247918001], Indicators.get_exp_weights(nb_period=2))
-        self.assertEqual([0.30382285285436134, 0.33243515239519433, 0.3637419947504442], Indicators.get_exp_weights(nb_period=3))
+        self.assertEqual([0.25, 0.7499999999999999], Indicators.get_exp_weights(nb_period=2))
+        self.assertEqual([0.14285714285714285, 0.2857142857142857, 0.5714285714285714], Indicators.get_exp_weights(nb_period=3))
 
     def test_exp_moving_average(self):
-        self.assertEqual(0., Indicators.exp_moving_average(self.x, K=8, nb_period=0))
         self.assertEqual(.4, Indicators.exp_moving_average(self.x, K=8, nb_period=1))
-        self.assertEqual(.20899392991672006, Indicators.exp_moving_average(self.x, K=8, nb_period=2))
-        self.assertEqual(-1.0781106634350017, Indicators.exp_moving_average(self.x, K=8, nb_period=4))
+        self.assertEqual(.3, Indicators.exp_moving_average(self.x, K=8, nb_period=2))
+        self.assertEqual(-0.4117647058823528, Indicators.exp_moving_average(self.x, K=8, nb_period=4))
 
     def test_rsi(self):
         self.assertEqual(0., Indicators.rsi(self.x, 0, 0))

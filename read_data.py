@@ -1,8 +1,6 @@
 import csv
 import json
 
-import numpy as np
-
 from model import Kline
 
 

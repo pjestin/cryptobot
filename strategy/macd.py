@@ -1,8 +1,6 @@
 import logging
 from datetime import datetime, timedelta
 
-import pandas as pd
-
 from strategy import supres
 from strategy.indicators import Indicators
 from model import TradeAction

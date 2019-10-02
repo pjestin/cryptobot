@@ -19,7 +19,6 @@ class MacdStrategy:
             reference_time_diff = timedelta(milliseconds=(klines[1].close_time - klines[0].close_time))
             if time_diff < cls.TIME_DIFF_FACTOR * reference_time_diff:
                 return TradeAction(None)
-        # close_prices = [kline.close_price for kline in klines]
         typical_prices = [(kline.close_price + kline.high_price + kline.low_price) / 3. for kline in klines]
         macd = Indicators.macd_difference(typical_prices, len(klines) - 1)
         ratio = macd / current_price

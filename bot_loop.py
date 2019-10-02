@@ -6,6 +6,7 @@ import time
 import argparse
 import logging
 import sys
+import json
 
 from binance_interface import BinanceInterface
 from strategy.macd_rsi import MacdRsiStrategy
@@ -15,7 +16,7 @@ from strategy.macd import MacdStrategy
 LOG_FILE = 'log/{}.log'
 
 
-def run(**params):
+def run(params):
     n_ref = params['n_ref']
     commission = params['commission']
     period = params['period']
@@ -82,12 +83,10 @@ def run(**params):
 def main():
 
     parser = argparse.ArgumentParser(description='Cryptocurrency trading bot')
-    parser.add_argument('-c', '--currency-pair', dest='currency_pair', help='Specify currency pair on which to trade')
-    parser.add_argument('-q', '--quantity', help='Quantity of target currency to trade')
-    parser.add_argument('-i', '--interval', help='Interval of klines')
     parser.add_argument('-v', '--verbose', help='Display more logs', action='store_true')
     parser.add_argument('-s', '--simulate', help='Do not make order, simulate only', action='store_true')
     parser.add_argument('-a', '--acquired', help='Target currency already acquired')
+    parser.add_argument('-f', '--config-file', help='Path to configuration file', dest="config_file")
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
@@ -101,20 +100,20 @@ def main():
         logging.info('Verbose output.')
     else:
         logging.basicConfig(format=log_format, level=logging.INFO, handlers=handlers)
+    
+    if not args.config_file:
+        raise EnvironmentError('Configuration file was not specified')
 
-    if not args.currency_pair:
-        raise ValueError('No currency pair provided')
+    params = {
+        "n_ref": 150,
+        "commission": 0.001,
+        "simulate": args.simulate,
+    }
+    params['acquired'] = float(args.acquired) if args.acquired else None
+    with open(args.config_file, newline='') as file:
+        params = {**params, **json.load(file)}
 
-    run(
-        n_ref=150,
-        commission=0.001,
-        period=300.,
-        simulate=args.simulate,
-        currency_pair=args.currency_pair,
-        quantity=float(args.quantity) if args.quantity else 0.,
-        interval=args.interval if args.interval else '5m',
-        acquired=float(args.acquired) if args.acquired else None
-    )
+    run(params)
 
 
 if __name__ == '__main__':

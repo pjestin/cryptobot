@@ -10,17 +10,17 @@ from datetime import timedelta
 import matplotlib.pyplot as plt
 
 import read_data
-from strategy.macd_rsi import MacdRsiStrategy
-from strategy.macd_mfi import MacdMfiStrategy
-from strategy.macd_ema_rsi import MacdEmaRsiStrategy
-from strategy.resistance import ResistanceStrategy
-from strategy.macd_ema import MacdEmaStrategy
-from strategy.ema import EmaStrategy
-from strategy.indicators import Indicators
-from strategy.macd_ema_ratio import MacEmaRatioStrategy
+# from strategy.macd_rsi import MacdRsiStrategy
+# from strategy.macd_mfi import MacdMfiStrategy
+# from strategy.macd_ema_rsi import MacdEmaRsiStrategy
+# from strategy.resistance import ResistanceStrategy
+# from strategy.macd_ema import MacdEmaStrategy
+# from strategy.ema import EmaStrategy
+# from strategy.indicators import Indicators
+# from strategy.macd_ema_ratio import MacEmaRatioStrategy
 from strategy.macd import MacdStrategy
-from strategy.ema_rsi import EmaRsiStrategy
-from strategy.bull_bear_macd_ema import BullBearMacdEmaStrategy
+# from strategy.ema_rsi import EmaRsiStrategy
+# from strategy.bull_bear_macd_ema import BullBearMacdEmaStrategy
 
 
 def run_simulation(klines, n_ref, commission):

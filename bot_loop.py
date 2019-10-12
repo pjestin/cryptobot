@@ -8,7 +8,7 @@ import logging
 import sys
 import json
 
-from binance_interface import BinanceInterface
+from interface.binance import BinanceInterface
 from strategy.macd_rsi import MacdRsiStrategy
 from strategy.macd_ema import MacdEmaStrategy
 from strategy.macd import MacdStrategy

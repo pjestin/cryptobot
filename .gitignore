@@ -103,5 +103,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# VS Code
+.vscode
+
 .binance
 data/*
+

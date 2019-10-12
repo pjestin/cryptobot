@@ -9,7 +9,7 @@ from datetime import timedelta
 
 import matplotlib.pyplot as plt
 
-import read_data
+from interface import read_data
 # from strategy.macd_rsi import MacdRsiStrategy
 # from strategy.macd_mfi import MacdMfiStrategy
 # from strategy.macd_ema_rsi import MacdEmaRsiStrategy

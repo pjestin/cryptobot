@@ -1,7 +1,7 @@
 import unittest
 
 from strategy.macd import MacdStrategy
-import read_data
+from interface import read_data
 
 
 class MacdStrategyTest(unittest.TestCase):

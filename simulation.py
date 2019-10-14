@@ -16,7 +16,7 @@ from interface import read_data
 # from strategy.resistance import ResistanceStrategy
 # from strategy.macd_ema import MacdEmaStrategy
 # from strategy.ema import EmaStrategy
-# from strategy.indicators import Indicators
+from strategy.indicators import Indicators
 # from strategy.macd_ema_ratio import MacEmaRatioStrategy
 from strategy.macd import MacdStrategy
 # from strategy.ema_rsi import EmaRsiStrategy
@@ -133,7 +133,7 @@ def simulate(**kwargs):
     n_ref = 100
     commission = .001
 
-    klines = read_data.read_klines_from_json(file_path='data/binance_klines_ETHUSDT_2h_1502942400000.json')
+    klines = read_data.read_klines_from_json(file_path='data/binance_klines_XRPUSDT_2h_1525420800000.json')
 
     # logging.info(klines[36000].close_time)
 

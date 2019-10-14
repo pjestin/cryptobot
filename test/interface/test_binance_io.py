@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 import os
 
-from interface.binance import BinanceInterface
+from interface.binance_io import BinanceInterface
 from model import Kline
 from interface import read_data
 

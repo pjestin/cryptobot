@@ -98,23 +98,3 @@ class BinanceInterface():
             diff2 = local_time2 - server_time['serverTime']
             print("local1: %s server:%s local2: %s diff1:%s diff2:%s" % (local_time1, server_time['serverTime'], local_time2, diff1, diff2))
             time.sleep(2)
-
-
-def main():
-    log_format = '%(asctime)-15s %(message)s'
-    logging.basicConfig(format=log_format, level=logging.DEBUG)
-
-    binance = BinanceInterface()
-
-    # Dump klines
-    # binance.dump_historical_klines('1h', 'BTCUSDT', '10 years ago', 'now')
-
-    # Create order
-    # binance.create_order(is_buy=True, quantity=0.1, currency_pair='BNBETH')
-
-    # Figure out time sync
-    binance.server_time_diff()
-
-
-if __name__ == '__main__':
-    main()

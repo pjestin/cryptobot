@@ -7,6 +7,7 @@ import argparse
 import logging
 import sys
 import json
+from datetime import timedelta
 
 from interface.binance_io import BinanceInterface
 from strategy.macd_rsi import MacdRsiStrategy
@@ -14,6 +15,7 @@ from strategy.macd_ema import MacdEmaStrategy
 from strategy.macd import MacdStrategy
 
 LOG_FILE = 'log/{}.log'
+TIME_DIFF_FACTOR = .9
 
 
 def run(params):
@@ -44,9 +46,17 @@ def run(params):
         klines = binance.get_klines(limit=n_ref, interval=interval, currency_pair=currency_pair)
         
         if klines:
-            # action = MacdRsiStrategy.decide_action_from_data(klines)
+
+            if previous_transac_time:
+                time_diff = timedelta(milliseconds=(klines[-1].close_time - previous_transac_time))
+                reference_time_diff = timedelta(milliseconds=(klines[1].close_time - klines[0].close_time))
+                if time_diff < TIME_DIFF_FACTOR * reference_time_diff:
+                    time.sleep(period)
+                    continue
+                    
+            action = MacdRsiStrategy.decide_action_from_data(klines)
             # action = MacdEmaStrategy.decide_action_from_data(klines)
-            action = MacdStrategy.decide_action_from_data(klines, previous_transac_time)
+            # action = MacdStrategy.decide_action_from_data(klines)
             logging.debug('Run {}; money: {}; transactions: {}; price ratio to previous: {}' \
                 .format(i, money, nb_transactions, klines[-1].close_price / previous_price))
 

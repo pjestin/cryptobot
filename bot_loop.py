@@ -8,6 +8,7 @@ import logging
 import sys
 import json
 from datetime import timedelta
+import os
 
 from interface.binance_io import BinanceInterface
 from strategy.macd_rsi import MacdRsiStrategy
@@ -89,6 +90,15 @@ def run(params):
         if duration < period:
             time.sleep(period - duration)
 
+def read_profile(profile_name):
+    if not profile_name:
+        raise EnvironmentError('Profile file was not specified')
+    file_name = 'profiles/{}.json'.format(profile_name.lower())
+    if not os.path.isfile(file_name):
+        raise EnvironmentError('Profile file does not exist')
+    with open(file_name, newline='') as file:
+        return json.load(file)
+
 
 def main():
 
@@ -96,7 +106,7 @@ def main():
     parser.add_argument('-v', '--verbose', help='Display more logs', action='store_true')
     parser.add_argument('-s', '--simulate', help='Do not make order, simulate only', action='store_true')
     parser.add_argument('-a', '--acquired', help='Target currency already acquired')
-    parser.add_argument('-f', '--config-file', help='Path to configuration file', dest="config_file")
+    parser.add_argument('-p', '--profile', help='Profile name')
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
@@ -110,9 +120,6 @@ def main():
         logging.info('Verbose output.')
     else:
         logging.basicConfig(format=log_format, level=logging.INFO, handlers=handlers)
-    
-    if not args.config_file:
-        raise EnvironmentError('Configuration file was not specified')
 
     params = {
         "n_ref": 150,
@@ -120,8 +127,7 @@ def main():
         "simulate": args.simulate,
     }
     params['acquired'] = float(args.acquired) if args.acquired else None
-    with open(args.config_file, newline='') as file:
-        params = {**params, **json.load(file)}
+    params = {**params, **read_profile(args.profile)}
 
     run(params)
 

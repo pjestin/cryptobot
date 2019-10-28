@@ -1,0 +1,26 @@
+{
+    "bnbusdt": {
+        "currency_pair": "BNBUSDT",
+        "interval": "2h",
+        "quantity": 0.7,
+        "period": 300
+    },
+    "btcusdt": {
+        "currency_pair": "BTCUSDT",
+        "interval": "2h",
+        "quantity": 0.0015,
+        "period": 300
+    },
+    "ethusdt": {
+        "currency_pair": "ETHUSDT",
+        "interval": "2h",
+        "quantity": 0.07,
+        "period": 300
+    },
+    "xrpusdt": {
+        "currency_pair": "XRPUSDT",
+        "interval": "2h",
+        "quantity": 50.0,
+        "period": 300
+    }    
+}

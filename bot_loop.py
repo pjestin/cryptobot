@@ -16,6 +16,7 @@ from strategy.macd_ema import MacdEmaStrategy
 from strategy.macd import MacdStrategy
 
 LOG_FILE = 'log/{}.log'
+PROFILE_FILE = 'profiles.json'
 TIME_DIFF_FACTOR = .9
 
 
@@ -55,9 +56,9 @@ def run(params):
                     time.sleep(period)
                     continue
                     
-            action = MacdRsiStrategy.decide_action_from_data(klines)
+            # action = MacdRsiStrategy.decide_action_from_data(klines)
             # action = MacdEmaStrategy.decide_action_from_data(klines)
-            # action = MacdStrategy.decide_action_from_data(klines)
+            action = MacdStrategy.decide_action_from_data(klines)
             logging.debug('Run {}; money: {}; transactions: {}; price ratio to previous: {}' \
                 .format(i, money, nb_transactions, klines[-1].close_price / previous_price))
 
@@ -90,14 +91,15 @@ def run(params):
         if duration < period:
             time.sleep(period - duration)
 
+
 def read_profile(profile_name):
     if not profile_name:
-        raise EnvironmentError('Profile file was not specified')
-    file_name = 'profiles/{}.json'.format(profile_name.lower())
-    if not os.path.isfile(file_name):
-        raise EnvironmentError('Profile file does not exist')
-    with open(file_name, newline='') as file:
-        return json.load(file)
+        raise EnvironmentError('Profile name was not specified')
+    with open(PROFILE_FILE, newline='') as file:
+        profiles = json.load(file)
+        if profile_name not in profiles:
+            raise EnvironmentError('Profile file does not exist')
+        return profiles[profile_name]
 
 
 def main():

@@ -10,17 +10,18 @@ from datetime import timedelta
 import matplotlib.pyplot as plt
 
 from interface import read_data
+from strategy.indicators import Indicators
 # from strategy.macd_rsi import MacdRsiStrategy
 # from strategy.macd_mfi import MacdMfiStrategy
 # from strategy.macd_ema_rsi import MacdEmaRsiStrategy
 # from strategy.resistance import ResistanceStrategy
 # from strategy.macd_ema import MacdEmaStrategy
 # from strategy.ema import EmaStrategy
-from strategy.indicators import Indicators
 # from strategy.macd_ema_ratio import MacEmaRatioStrategy
 from strategy.macd import MacdStrategy
 # from strategy.ema_rsi import EmaRsiStrategy
 # from strategy.bull_bear_macd_ema import BullBearMacdEmaStrategy
+# from strategy.rsi import RsiStrategy
 
 
 def run_simulation(klines, n_ref, commission):
@@ -43,13 +44,14 @@ def run_simulation(klines, n_ref, commission):
         # action = MacdRsiStrategy.decide_action_from_data(klines_ref)
         # action = MacdMfiStrategy.decide_action_from_data(klines_ref)
         # action = ResistanceStrategy.decide_action_from_data(klines_ref, previous_price, acquired)
-        action = MacdStrategy.decide_action_from_data(klines_ref, previous_transaction_time)
+        action = MacdStrategy.decide_action_from_data(klines_ref)
         # action = MacdEmaStrategy.decide_action_from_data(klines_ref)
         # action = MacdEmaRsiStrategy.decide_action_from_data(klines_ref)
         # action = MacEmaRatioStrategy.decide_action_from_data(klines_ref, previous_price, acquired)
         # action = EmaStrategy.decide_action_from_data(klines_ref)
         # action = EmaRsiStrategy.decide_action_from_data(klines_ref)
         # action = BullBearMacdEmaStrategy.decide_action_from_data(klines_ref)
+        # action = RsiStrategy.decide_action_from_data(klines_ref)
 
         if not acquired and action.is_buy():
             acquired = (1 - commission) / price
@@ -76,7 +78,7 @@ def run_simulation(klines, n_ref, commission):
     duration = timedelta(milliseconds=(klines[-1].close_time - klines[0].close_time))
     avg_per_month = money[-1] * timedelta(days=30) / duration
     avg_per_year_multiplier = (avg_per_month + 1) ** 12
-    logging.info('Money: {}; Number of transactions: {}; Market: {}'.format(money[-1], len(money), market))
+    logging.info('Money: {}; Number of transactions: {}; Market: {}'.format(money[-1], 2 * len(money), market))
     logging.info('Duration: {}; average money per month: {}; per year: {}'.format(duration, avg_per_month, avg_per_year_multiplier))
     logging.info('Time: {}'.format(time.time() - start_time))
 
@@ -133,7 +135,7 @@ def simulate(**kwargs):
     n_ref = 100
     commission = .001
 
-    klines = read_data.read_klines_from_json(file_path='data/binance_klines_XRPUSDT_2h_1525420800000.json')
+    klines = read_data.read_klines_from_json(file_path='data/binance_klines_XRPUSDT_6h_1525413600000.json')
 
     # logging.info(klines[36000].close_time)
 

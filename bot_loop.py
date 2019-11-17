@@ -28,14 +28,15 @@ def run(params):
     currency_pair = params['currency_pair']
     quantity = params['quantity']
     interval = params['interval']
-    acquired = params['acquired']
+    acquired_price = params['acquired_price']
 
-    money = 0.
+    money = -1. if acquired_price else 0.
     price = None
-    previous_price = float('inf')
+    previous_price = acquired_price if acquired_price else float('inf')
     nb_transactions = 0
     previous_transac_time = None
     previous_time = None
+    acquired = 1 / acquired_price if acquired_price else None
 
     binance = BinanceInterface()
 
@@ -45,22 +46,25 @@ def run(params):
         begin_time = time.time()
 
         # Kline history
-        klines = binance.get_klines(limit=n_ref, interval=interval, currency_pair=currency_pair)
-        
+        klines = binance.get_klines(
+            limit=n_ref, interval=interval, currency_pair=currency_pair)
+
         if klines:
 
             if previous_transac_time:
-                time_diff = timedelta(milliseconds=(klines[-1].close_time - previous_transac_time))
-                reference_time_diff = timedelta(milliseconds=(klines[1].close_time - klines[0].close_time))
+                time_diff = timedelta(milliseconds=(
+                    klines[-1].close_time - previous_transac_time))
+                reference_time_diff = timedelta(milliseconds=(
+                    klines[1].close_time - klines[0].close_time))
                 if time_diff < TIME_DIFF_FACTOR * reference_time_diff:
                     time.sleep(period)
                     continue
-                    
+
             # action = MacdRsiStrategy.decide_action_from_data(klines)
             # action = MacdEmaStrategy.decide_action_from_data(klines)
             action = MacdStrategy.decide_action_from_data(klines)
-            logging.debug('Run {}; money: {}; transactions: {}; price ratio to previous: {}' \
-                .format(i, money, nb_transactions, klines[-1].close_price / previous_price))
+            logging.debug('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
+                          .format(i, money, nb_transactions, klines[-1].close_price / previous_price))
 
             # Buy or sell
             if not acquired and action.is_buy():
@@ -72,7 +76,8 @@ def run(params):
                 money -= 1
                 logging.info('Buying at {}; money: {}'.format(price, money))
                 if not simulate:
-                    binance.create_order(is_buy=True, quantity=quantity, currency_pair=currency_pair)
+                    binance.create_order(
+                        is_buy=True, quantity=quantity, currency_pair=currency_pair)
             elif acquired and action.is_sell():
                 nb_transactions += 1
                 previous_transac_time = klines[-1].close_time
@@ -82,10 +87,11 @@ def run(params):
                 acquired = None
                 logging.info('Selling at {}; money: {}'.format(price, money))
                 if not simulate:
-                    binance.create_order(is_buy=False, quantity=quantity, currency_pair=currency_pair)
-        
+                    binance.create_order(
+                        is_buy=False, quantity=quantity, currency_pair=currency_pair)
+
         previous_time = time.time()
-        
+
         # Sleep if duration was shorter than period
         duration = time.time() - begin_time
         if duration < period:
@@ -105,9 +111,12 @@ def read_profile(profile_name):
 def main():
 
     parser = argparse.ArgumentParser(description='Cryptocurrency trading bot')
-    parser.add_argument('-v', '--verbose', help='Display more logs', action='store_true')
-    parser.add_argument('-s', '--simulate', help='Do not make order, simulate only', action='store_true')
-    parser.add_argument('-a', '--acquired', help='Target currency already acquired')
+    parser.add_argument('-v', '--verbose',
+                        help='Display more logs', action='store_true')
+    parser.add_argument(
+        '-s', '--simulate', help='Do not make order, simulate only', action='store_true')
+    parser.add_argument('-a', '--acquired-price',
+                        help='Price at which target currency was acquired', dest='acquired_price')
     parser.add_argument('-p', '--profile', help='Profile name')
     args = parser.parse_args()
 
@@ -118,17 +127,21 @@ def main():
         logging.StreamHandler(sys.stdout)
     ]
     if args.verbose:
-        logging.basicConfig(format=log_format, level=logging.DEBUG, handlers=handlers)
+        logging.basicConfig(format=log_format,
+                            level=logging.DEBUG, handlers=handlers)
         logging.info('Verbose output.')
     else:
-        logging.basicConfig(format=log_format, level=logging.INFO, handlers=handlers)
+        logging.basicConfig(format=log_format,
+                            level=logging.INFO, handlers=handlers)
 
     params = {
         "n_ref": 150,
         "commission": 0.001,
         "simulate": args.simulate,
     }
-    params['acquired'] = float(args.acquired) if args.acquired else None
+    params['acquired_price'] = float(
+        args.acquired_price) if args.acquired_price else None
+
     params = {**params, **read_profile(args.profile)}
 
     run(params)

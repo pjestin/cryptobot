@@ -26,25 +26,25 @@
     "4h_bnbusdt": {
         "currency_pair": "BNBUSDT",
         "interval": "4h",
-        "quantity": 4.0,
+        "quantity": 1.0,
         "period": 300
     },
     "4h_btcusdt": {
         "currency_pair": "BTCUSDT",
         "interval": "4h",
-        "quantity": 0.01,
+        "quantity": 0.0015,
         "period": 300
     },
     "4h_ethusdt": {
         "currency_pair": "ETHUSDT",
         "interval": "4h",
-        "quantity": 0.4,
+        "quantity": 0.1,
         "period": 300
     },
     "4h_xrpusdt": {
         "currency_pair": "XRPUSDT",
         "interval": "4h",
-        "quantity": 280.0,
+        "quantity": 70.0,
         "period": 300
     },
     "bnbusdt": {

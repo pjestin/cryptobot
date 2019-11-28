@@ -149,7 +149,7 @@ def simulate(**kwargs):
     commission = .001
 
     klines = read_data.read_klines_from_json(
-        file_path='data/binance_klines_ETHUSDT_4h_1502942400000.json')
+        file_path='data/binance_klines_BTCUSDT_6h_1502928000000.json')
 
     run_simulation(klines, n_ref=n_ref, commission=commission)
 

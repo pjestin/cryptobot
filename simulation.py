@@ -23,6 +23,8 @@ from strategy.ema import EmaStrategy
 # from strategy.bull_bear_macd_ema import BullBearMacdEmaStrategy
 # from strategy.rsi import RsiStrategy
 
+TIME_DIFF_FACTOR = 15.
+
 
 def run_simulation(klines, n_ref, commission):
     n = len(klines)
@@ -33,7 +35,7 @@ def run_simulation(klines, n_ref, commission):
     buy_times = []
     sell_times = []
 
-    previous_transaction_time = None
+    previous_transac_time = None
 
     for k in range(n_ref, n):
         klines_ref = klines[k-n_ref:k]
@@ -41,6 +43,14 @@ def run_simulation(klines, n_ref, commission):
         current_time = klines_ref[-1].close_time
         logging.debug('Run {}; time: {}; money: {}; price: {}'.format(
             k - n_ref, current_time, money[-1], price))
+
+        if previous_transac_time:
+            time_diff = timedelta(milliseconds=(
+                klines_ref[-1].close_time - previous_transac_time))
+            reference_time_diff = timedelta(milliseconds=(
+                klines_ref[1].close_time - klines_ref[0].close_time))
+            if time_diff < TIME_DIFF_FACTOR * reference_time_diff:
+                continue
 
         # action = MacdRsiStrategy.decide_action_from_data(klines_ref)
         # action = MacdMfiStrategy.decide_action_from_data(klines_ref)
@@ -58,7 +68,7 @@ def run_simulation(klines, n_ref, commission):
             acquired = (1 - commission) / price
             logging.info('Buying at {}'.format(price))
             previous_price = price
-            previous_transaction_time = current_time
+            previous_transac_time = current_time
             buy_times.append(current_time)
         elif acquired and action.is_sell():
             money.append((money[-1] - 1) + (1 - commission) * acquired * price)
@@ -66,7 +76,7 @@ def run_simulation(klines, n_ref, commission):
             logging.info('Selling at {}; money: {}; time: {}'.format(
                 price, money[-1], current_time))
             previous_price = price
-            previous_transaction_time = current_time
+            previous_transac_time = current_time
             sell_times.append(current_time)
 
     if acquired:
@@ -145,11 +155,11 @@ def simulate(**kwargs):
     else:
         logging.basicConfig(format=log_format, level=logging.INFO)
 
-    n_ref = 100
+    n_ref = 1000
     commission = .001
 
     klines = read_data.read_klines_from_json(
-        file_path='data/binance_klines_BTCUSDT_6h_1502928000000.json')
+        file_path='data/binance_klines_BTCUSDT_15m_1502942400000.json')
 
     run_simulation(klines, n_ref=n_ref, commission=commission)
 

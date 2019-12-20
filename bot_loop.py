@@ -62,7 +62,8 @@ def run(params):
 
             # action = MacdRsiStrategy.decide_action_from_data(klines)
             # action = MacdEmaStrategy.decide_action_from_data(klines)
-            action = MacdStrategy.decide_action_from_data(klines)
+            # action = MacdStrategy.decide_action_from_data(klines)
+            action = EmaStrategy.decide_action_from_data(klines)
             logging.debug('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
                           .format(i, money, nb_transactions, klines[-1].close_price / previous_price))
 

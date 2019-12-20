@@ -1,97 +1,25 @@
 {
-    "1h_bnbusdt": {
+    "bnbusdt": {
         "currency_pair": "BNBUSDT",
-        "interval": "1h",
+        "interval": "15m",
         "quantity": 1.0,
         "period": 300
     },
-    "1h_btcusdt": {
+    "btcusdt": {
         "currency_pair": "BTCUSDT",
-        "interval": "1h",
+        "interval": "15m",
         "quantity": 0.002,
         "period": 300
     },
-    "1h_ethusdt": {
+    "ethusdt": {
         "currency_pair": "ETHUSDT",
-        "interval": "1h",
+        "interval": "15m",
         "quantity": 0.1,
         "period": 300
     },
-    "1h_xrpusdt": {
+    "xrpusdt": {
         "currency_pair": "XRPUSDT",
-        "interval": "1h",
-        "quantity": 70.0,
-        "period": 300
-    },
-    "2h_bnbusdt": {
-        "currency_pair": "BNBUSDT",
-        "interval": "2h",
-        "quantity": 1.0,
-        "period": 300
-    },
-    "2h_btcusdt": {
-        "currency_pair": "BTCUSDT",
-        "interval": "2h",
-        "quantity": 0.002,
-        "period": 300
-    },
-    "2h_ethusdt": {
-        "currency_pair": "ETHUSDT",
-        "interval": "2h",
-        "quantity": 0.1,
-        "period": 300
-    },
-    "2h_xrpusdt": {
-        "currency_pair": "XRPUSDT",
-        "interval": "2h",
-        "quantity": 70.0,
-        "period": 300
-    },
-    "4h_bnbusdt": {
-        "currency_pair": "BNBUSDT",
-        "interval": "4h",
-        "quantity": 1.0,
-        "period": 300
-    },
-    "4h_btcusdt": {
-        "currency_pair": "BTCUSDT",
-        "interval": "4h",
-        "quantity": 0.002,
-        "period": 300
-    },
-    "4h_ethusdt": {
-        "currency_pair": "ETHUSDT",
-        "interval": "4h",
-        "quantity": 0.1,
-        "period": 300
-    },
-    "4h_xrpusdt": {
-        "currency_pair": "XRPUSDT",
-        "interval": "4h",
-        "quantity": 70.0,
-        "period": 300
-    },
-    "6h_bnbusdt": {
-        "currency_pair": "BNBUSDT",
-        "interval": "6h",
-        "quantity": 1.0,
-        "period": 300
-    },
-    "6h_btcusdt": {
-        "currency_pair": "BTCUSDT",
-        "interval": "6h",
-        "quantity": 0.002,
-        "period": 300
-    },
-    "6h_ethusdt": {
-        "currency_pair": "ETHUSDT",
-        "interval": "6h",
-        "quantity": 0.1,
-        "period": 300
-    },
-    "6h_xrpusdt": {
-        "currency_pair": "XRPUSDT",
-        "interval": "6h",
+        "interval": "15m",
         "quantity": 70.0,
         "period": 300
     }

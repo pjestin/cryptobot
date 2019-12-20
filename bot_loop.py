@@ -18,7 +18,7 @@ from strategy.ema import EmaStrategy
 
 LOG_FILE = 'log/{}.log'
 PROFILE_FILE = 'profiles.json'
-TIME_DIFF_FACTOR = .9
+TIME_DIFF_FACTOR = 15.
 
 
 def run(params):
@@ -137,7 +137,7 @@ def main():
                             level=logging.INFO, handlers=handlers)
 
     params = {
-        "n_ref": 150,
+        "n_ref": 1000,
         "commission": 0.001,
         "simulate": args.simulate,
     }

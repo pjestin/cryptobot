@@ -7,7 +7,7 @@ from model import TradeAction
 
 class EmaStrategy:
 
-    EMA_RANGE = 35
+    EMA_RANGE = 800
     EMA_GAP = 0.
 
     @classmethod

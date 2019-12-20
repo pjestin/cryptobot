@@ -14,6 +14,7 @@ from interface.binance_io import BinanceInterface
 from strategy.macd_rsi import MacdRsiStrategy
 from strategy.macd_ema import MacdEmaStrategy
 from strategy.macd import MacdStrategy
+from strategy.ema import EmaStrategy
 
 LOG_FILE = 'log/{}.log'
 PROFILE_FILE = 'profiles.json'

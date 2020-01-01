@@ -99,6 +99,12 @@ def run_simulation(klines, n_ref, commission):
         duration, avg_per_month, avg_per_year_multiplier))
     logging.info('Time: {}'.format(time.time() - start_time))
 
+    # plot(klines, money, buy_times, sell_times)
+
+    return money
+
+
+def plot(klines, money, buy_times, sell_times):
     plt.subplot(2, 1, 1)
     plt.plot([klines[0].close_time] + sell_times, money)
 
@@ -114,29 +120,6 @@ def run_simulation(klines, n_ref, commission):
     plt.plot(x, ([0] * 50) + macd)
     plt.axhline(y=0)
 
-    plt.show()
-
-    return money
-
-
-def graph(klines):
-    n_ref = 120
-    klines_ref = klines[-n_ref:]
-    prices = [kline.close_price for kline in klines_ref]
-    ema_12 = [Indicators.exp_moving_average(
-        prices, k, 12) for k in range(n_ref//2, n_ref)]
-    ema_26 = [Indicators.exp_moving_average(
-        prices, k, 26) for k in range(n_ref//2, n_ref)]
-    macd = [Indicators.moving_average_conv_div(
-        prices, k) for k in range(n_ref//2, n_ref)]
-    signal = [Indicators.moving_average_conv_div_ema(
-        prices, k) for k in range(n_ref//2, n_ref)]
-
-    plt.plot(range(0, n_ref//2), ema_12)
-    plt.plot(range(0, n_ref//2), ema_26)
-    plt.plot(range(0, n_ref//2), macd)
-    plt.plot(range(0, n_ref//2), signal)
-    plt.plot(range(0, n_ref//2), prices[n_ref//2:])
     plt.show()
 
 
@@ -159,7 +142,7 @@ def simulate(**kwargs):
     commission = .001
 
     klines = read_data.read_klines_from_json(
-        file_path='data/binance_klines_BTCUSDT_15m_1502942400000.json')
+        file_path='data/binance_klines_BNBETH_15m_1502269200000.json')
 
     run_simulation(klines, n_ref=n_ref, commission=commission)
 

@@ -16,14 +16,15 @@ from strategy.indicators import Indicators
 # from strategy.macd_ema_rsi import MacdEmaRsiStrategy
 # from strategy.resistance import ResistanceStrategy
 # from strategy.macd_ema import MacdEmaStrategy
-from strategy.ema import EmaStrategy
+# from strategy.ema import EmaStrategy
+from strategy.volume_ema import VolumeEmaStrategy
 # from strategy.macd_ema_ratio import MacEmaRatioStrategy
 # from strategy.macd import MacdStrategy
 # from strategy.ema_rsi import EmaRsiStrategy
 # from strategy.bull_bear_macd_ema import BullBearMacdEmaStrategy
 # from strategy.rsi import RsiStrategy
 
-TIME_DIFF_FACTOR = 15.
+TIME_DIFF_FACTOR = 0.
 
 
 def run_simulation(klines, n_ref, commission):
@@ -59,7 +60,8 @@ def run_simulation(klines, n_ref, commission):
         # action = MacdEmaStrategy.decide_action_from_data(klines_ref)
         # action = MacdEmaRsiStrategy.decide_action_from_data(klines_ref)
         # action = MacEmaRatioStrategy.decide_action_from_data(klines_ref, previous_price, acquired)
-        action = EmaStrategy.decide_action_from_data(klines_ref)
+        # action = EmaStrategy.decide_action_from_data(klines_ref)
+        action = VolumeEmaStrategy.decide_action_from_data(klines_ref)
         # action = EmaRsiStrategy.decide_action_from_data(klines_ref)
         # action = BullBearMacdEmaStrategy.decide_action_from_data(klines_ref)
         # action = RsiStrategy.decide_action_from_data(klines_ref)
@@ -99,7 +101,7 @@ def run_simulation(klines, n_ref, commission):
         duration, avg_per_month, avg_per_year_multiplier))
     logging.info('Time: {}'.format(time.time() - start_time))
 
-    # plot(klines, money, buy_times, sell_times)
+    plot(klines, money, buy_times, sell_times)
 
     return money
 
@@ -138,11 +140,11 @@ def simulate(**kwargs):
     else:
         logging.basicConfig(format=log_format, level=logging.INFO)
 
-    n_ref = 1000
+    n_ref = 2000
     commission = .001
 
     klines = read_data.read_klines_from_json(
-        file_path='data/binance_klines_BNBETH_15m_1502269200000.json')
+        file_path='data/binance_klines_ETHUSDT_15m_1504869300000.json')
 
     run_simulation(klines, n_ref=n_ref, commission=commission)
 

@@ -23,6 +23,7 @@ from strategy.volume_ema import VolumeEmaStrategy
 # from strategy.ema_rsi import EmaRsiStrategy
 # from strategy.bull_bear_macd_ema import BullBearMacdEmaStrategy
 # from strategy.rsi import RsiStrategy
+from strategy.logistic_regression import LogisticRegressionStrategy
 
 TIME_DIFF_FACTOR = 0.
 
@@ -61,10 +62,12 @@ def run_simulation(klines, n_ref, commission):
         # action = MacdEmaRsiStrategy.decide_action_from_data(klines_ref)
         # action = MacEmaRatioStrategy.decide_action_from_data(klines_ref, previous_price, acquired)
         # action = EmaStrategy.decide_action_from_data(klines_ref)
-        action = VolumeEmaStrategy.decide_action_from_data(klines_ref)
+        # action = VolumeEmaStrategy.decide_action_from_data(klines_ref)
         # action = EmaRsiStrategy.decide_action_from_data(klines_ref)
         # action = BullBearMacdEmaStrategy.decide_action_from_data(klines_ref)
         # action = RsiStrategy.decide_action_from_data(klines_ref)
+        action = LogisticRegressionStrategy.decide_action_from_data(
+            klines_ref)
 
         if not acquired and action.is_buy():
             acquired = (1 - commission) / price
@@ -140,7 +143,7 @@ def simulate(**kwargs):
     else:
         logging.basicConfig(format=log_format, level=logging.INFO)
 
-    n_ref = 2000
+    n_ref = 200
     commission = .001
 
     klines = read_data.read_klines_from_json(

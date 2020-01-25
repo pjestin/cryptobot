@@ -140,7 +140,7 @@ def main():
                             level=logging.INFO, handlers=handlers)
 
     params = {
-        "n_ref": 1000,
+        "n_ref": 200,
         "commission": 0.001,
         "simulate": args.simulate,
     }

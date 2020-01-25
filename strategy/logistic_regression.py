@@ -1,9 +1,9 @@
 import math
+import logging
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
-# from sklearn.ensemble import GradientBoostingClassifier
-# from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
 
 from model import TradeAction
 
@@ -26,6 +26,7 @@ class LogisticRegressionStrategy:
 
     @classmethod
     def fit_model(cls, klines, use_case):
+        logging.debug("Use case: '{}'".format(use_case))
         n = len(klines)
         log_returns = cls.get_log_returns(
             [kline.close_price for kline in klines])
@@ -43,15 +44,16 @@ class LogisticRegressionStrategy:
 
         X = np.array(X)
 
-        # X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-        # model = xgb.XGBClassifier(learning_rate=0.01).fit(
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, random_state=42)
         model = LogisticRegression(C=0.01).fit(
-            # model = GradientBoostingClassifier(random_state=0, learning_rate=0.01).fit(
-            X, y)
-        # X_train, y_train)
+            # X, y)
+            X_train, y_train)
 
-        # print("Training set score: {:.2f}".format(model.score(X_train, y_train)))
-        # print("Test set score: {:.2f}".format(model.score(X_test, y_test)))
+        logging.debug("Training set score: {:.2f}".format(
+            model.score(X_train, y_train)))
+        logging.debug("Test set score: {:.2f}".format(
+            model.score(X_test, y_test)))
 
         # test_index = 0
         # print(X_test[test_index, :].reshape(1, -1))

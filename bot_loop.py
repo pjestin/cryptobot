@@ -19,7 +19,7 @@ from strategy.logistic_regression import LogisticRegressionStrategy
 
 LOG_FILE = 'log/{}.log'
 PROFILE_FILE = 'profiles.json'
-TIME_DIFF_FACTOR = 15.
+TIME_DIFF_FACTOR = 4.
 
 
 def run(params):

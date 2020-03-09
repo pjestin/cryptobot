@@ -24,6 +24,7 @@ from strategy.volume_ema import VolumeEmaStrategy
 # from strategy.bull_bear_macd_ema import BullBearMacdEmaStrategy
 # from strategy.rsi import RsiStrategy
 from strategy.logistic_regression import LogisticRegressionStrategy
+from strategy.tensorflow import TensorFlowStrategy
 
 TIME_DIFF_FACTOR = 0.
 
@@ -66,7 +67,9 @@ def run_simulation(klines, n_ref, commission):
         # action = EmaRsiStrategy.decide_action_from_data(klines_ref)
         # action = BullBearMacdEmaStrategy.decide_action_from_data(klines_ref)
         # action = RsiStrategy.decide_action_from_data(klines_ref)
-        action = LogisticRegressionStrategy.decide_action_from_data(
+        # action = LogisticRegressionStrategy.decide_action_from_data(
+        #     klines_ref)
+        action = TensorFlowStrategy.decide_action_from_data(
             klines_ref)
 
         if not acquired and action.is_buy():
@@ -143,11 +146,11 @@ def simulate(**kwargs):
     else:
         logging.basicConfig(format=log_format, level=logging.INFO)
 
-    n_ref = 200
+    n_ref = 10000
     commission = .001
 
     klines = read_data.read_klines_from_json(
-        file_path='data/binance_klines_ETHUSDT_15m_1504869300000.json')
+        file_path='data/binance_klines_BTCUSDT_1h_1502942400000.json')
 
     run_simulation(klines, n_ref=n_ref, commission=commission)
 

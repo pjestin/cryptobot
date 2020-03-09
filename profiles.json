@@ -14,7 +14,7 @@
     "ethusdt": {
         "currency_pair": "ETHUSDT",
         "interval": "15m",
-        "quantity": 0.1,
+        "quantity": 0.4,
         "period": 300
     },
     "xrpusdt": {

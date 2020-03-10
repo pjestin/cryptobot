@@ -3,7 +3,8 @@ import logging
 import time
 
 from binance.client import Client
-from model import Kline
+from model import Kline, Trade
+
 
 class BinanceInterface():
 
@@ -20,7 +21,8 @@ class BinanceInterface():
             self.client = Client(api_key, secret_key)
 
     def get_history(self, limit, currency_pair):
-        trades = self.client.get_recent_trades(symbol=currency_pair, limit=limit)
+        trades = self.client.get_recent_trades(
+            symbol=currency_pair, limit=limit)
         t = [int(trade['time']) for trade in trades]
         x = [float(trade['price']) for trade in trades]
         return t, x
@@ -53,7 +55,8 @@ class BinanceInterface():
             klines.append(kline)
         logging.debug('Number of klines: {}'.format(len(klines)))
         first_time = klines[0][0]
-        file_name = 'data/binance_klines_{}_{}_{}.json'.format(currency_pair, interval, first_time)
+        file_name = 'data/binance_klines_{}_{}_{}.json'.format(
+            currency_pair, interval, first_time)
         with open(file_name, mode='w') as file:
             json.dump(klines, file)
 
@@ -78,7 +81,7 @@ class BinanceInterface():
         if not order or 'orderId' not in order:
             raise ValueError('No order ID in returned order')
         order_id = order['orderId']
-        for _ in range(0, self.TIMEOUT): 
+        for _ in range(0, self.TIMEOUT):
             if not order or 'status' not in order or order['status'] != Client.ORDER_STATUS_FILLED:
                 logging.debug('Awaiting order filling...')
                 time.sleep(1)
@@ -96,5 +99,10 @@ class BinanceInterface():
             diff1 = server_time['serverTime'] - local_time1
             local_time2 = int(time.time() * 1000)
             diff2 = local_time2 - server_time['serverTime']
-            print("local1: %s server:%s local2: %s diff1:%s diff2:%s" % (local_time1, server_time['serverTime'], local_time2, diff1, diff2))
+            print("local1: %s server:%s local2: %s diff1:%s diff2:%s" % (
+                local_time1, server_time['serverTime'], local_time2, diff1, diff2))
             time.sleep(2)
+
+    def my_trade_history(self, currency_pair):
+        trades = self.client.get_my_trades(symbol=currency_pair)
+        return [Trade(trade_data) for trade_data in trades]

@@ -6,6 +6,7 @@ from interface.binance_io import BinanceInterface
 from model import Kline
 from interface import read_data
 
+
 class BinanceInterfaceTest(unittest.TestCase):
 
     TEST_DATA_FILE = 'data/binance_klines_DOGEUSDT_2m_1509926400000.json'
@@ -45,7 +46,7 @@ class BinanceInterfaceTest(unittest.TestCase):
             '42788.24647100',
             '102286567.18669863'
         ]
-    
+
     def tearDown(self):
         if os.path.isfile(self.TEST_DATA_FILE):
             os.remove(self.TEST_DATA_FILE)
@@ -89,7 +90,8 @@ class BinanceInterfaceTest(unittest.TestCase):
         )
 
     def test_dump_historical_klines(self):
-        self.mock_client.get_historical_klines_generator.return_value = [self.kline1, self.kline2]
+        self.mock_client.get_historical_klines_generator.return_value = [
+            self.kline1, self.kline2]
         self.binance.dump_historical_klines(
             interval='2m',
             currency_pair='DOGEUSDT',
@@ -100,7 +102,7 @@ class BinanceInterfaceTest(unittest.TestCase):
         self.assertEqual([Kline(self.kline1), Kline(self.kline2)], kline_data)
 
     def test_last_price(self):
-        self.mock_client.get_ticker.return_value = { 'lastPrice': 95.62 }
+        self.mock_client.get_ticker.return_value = {'lastPrice': 95.62}
         last_price = self.binance.last_price('BTCUSDT')
         self.assertEqual(95.62, last_price)
         self.mock_client.get_ticker.assert_called_once_with(symbol='BTCUSDT')
@@ -134,7 +136,8 @@ class BinanceInterfaceTest(unittest.TestCase):
             'status': 'FILLED'
         }
         self.mock_client.create_order.return_value = mock_order_pending
-        self.mock_client.get_order.side_effect = [mock_order_pending, mock_order_filled]
+        self.mock_client.get_order.side_effect = [
+            mock_order_pending, mock_order_filled]
         order = self.binance.create_order(
             is_buy=False,
             quantity=2.5,
@@ -164,3 +167,22 @@ class BinanceInterfaceTest(unittest.TestCase):
                 currency_pair='BTCUSDT'
             )
         self.assertEqual('No order ID in returned order', str(cm.exception))
+
+    def test_my_trade_history(self):
+        mock_trade = {
+            "id": 28457,
+            "price": "4.00000100",
+            "qty": "12.00000000",
+            "commission": "10.10000000",
+            "commissionAsset": "BNB",
+            "time": 1499865549590,
+            "isBuyer": True,
+            "isMaker": False,
+            "isBestMatch": True
+        }
+        self.mock_client.get_my_trades.return_value = [mock_trade]
+        trades = self.binance.my_trade_history(currency_pair='BTCUSDT')
+        self.mock_client.get_my_trades.assert_called_with(symbol='BTCUSDT')
+        self.assertEqual(float(mock_trade['price']), trades[0].price)
+        self.assertEqual(mock_trade['isBuyer'], trades[0].is_buy)
+        self.assertEqual(mock_trade['time'], trades[0].time)

@@ -10,9 +10,9 @@ from model import TradeAction
 
 class TensorFlowStrategy:
 
-    LOOK_AHEAD = 1
-    MIN_LOG_RETURN = 0.
-    N_FEATURES = 200
+    LOOK_AHEAD = 10
+    MIN_LOG_RETURN = 0.001
+    N_FEATURES = 50
 
     TRAINING_SET_SCORES = np.array(0)
     TEST_SET_SCORES = np.array(0)
@@ -69,7 +69,7 @@ class TensorFlowStrategy:
             cls.TRAINING_SET_SCORES, model.evaluate(X_train, y_train, verbose=2))
         cls.TEST_SET_SCORES = np.append(
             cls.TEST_SET_SCORES, model.evaluate(X_test, y_test, verbose=2))
-        # logging.debug('Mean training set score: {}'.format(np.mean(cls.TRAINING_SET_SCORES)))
+        logging.debug('Mean training set score: {}'.format(np.mean(cls.TRAINING_SET_SCORES)))
         logging.debug('Mean test set score: {}'.format(
             np.mean(cls.TEST_SET_SCORES)))
 

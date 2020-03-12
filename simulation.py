@@ -146,11 +146,11 @@ def simulate(**kwargs):
     else:
         logging.basicConfig(format=log_format, level=logging.INFO)
 
-    n_ref = 10000
+    n_ref = 1000
     commission = .001
 
     klines = read_data.read_klines_from_json(
-        file_path='data/binance_klines_BTCUSDT_1h_1502942400000.json')
+        file_path='data/binance_klines_ETHUSDT_1h_1558454400000.json')
 
     run_simulation(klines, n_ref=n_ref, commission=commission)
 

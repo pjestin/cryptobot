@@ -3,24 +3,24 @@
         "currency_pair": "BNBUSDT",
         "interval": "15m",
         "quantity": 2.0,
-        "period": 300
+        "period": 60
     },
     "btcusdt": {
         "currency_pair": "BTCUSDT",
         "interval": "15m",
         "quantity": 0.004,
-        "period": 300
+        "period": 60
     },
     "ethusdt": {
         "currency_pair": "ETHUSDT",
         "interval": "15m",
         "quantity": 0.2,
-        "period": 300
+        "period": 60
     },
     "xrpusdt": {
         "currency_pair": "XRPUSDT",
         "interval": "15m",
         "quantity": 150.0,
-        "period": 300
+        "period": 60
     }
 }

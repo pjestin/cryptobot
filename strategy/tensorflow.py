@@ -11,7 +11,7 @@ from model import TradeAction
 class TensorFlowStrategy:
 
     LOOK_AHEAD = 10
-    MIN_LOG_RETURN = 0.001
+    MIN_LOG_RETURN = 0.01
     N_FEATURES = 50
 
     TRAINING_SET_SCORES = np.array(0)

@@ -17,14 +17,15 @@ from strategy.indicators import Indicators
 # from strategy.resistance import ResistanceStrategy
 # from strategy.macd_ema import MacdEmaStrategy
 # from strategy.ema import EmaStrategy
-from strategy.volume_ema import VolumeEmaStrategy
+# from strategy.volume_ema import VolumeEmaStrategy
 # from strategy.macd_ema_ratio import MacEmaRatioStrategy
 # from strategy.macd import MacdStrategy
 # from strategy.ema_rsi import EmaRsiStrategy
 # from strategy.bull_bear_macd_ema import BullBearMacdEmaStrategy
 # from strategy.rsi import RsiStrategy
-from strategy.logistic_regression import LogisticRegressionStrategy
-from strategy.tensorflow import TensorFlowStrategy
+# from strategy.logistic_regression import LogisticRegressionStrategy
+# from strategy.tensorflow import TensorFlowStrategy
+from strategy.regression_buy import RegressionBuyStrategy
 
 TIME_DIFF_FACTOR = 0.
 
@@ -39,6 +40,7 @@ def run_simulation(klines, n_ref, commission):
     sell_times = []
 
     previous_transac_time = None
+    previous_price = None
 
     for k in range(n_ref, n):
         klines_ref = klines[k-n_ref:k]
@@ -69,8 +71,9 @@ def run_simulation(klines, n_ref, commission):
         # action = RsiStrategy.decide_action_from_data(klines_ref)
         # action = LogisticRegressionStrategy.decide_action_from_data(
         #     klines_ref)
-        action = TensorFlowStrategy.decide_action_from_data(
-            klines_ref)
+        # action = TensorFlowStrategy.decide_action_from_data(
+        #     klines_ref)
+        action = RegressionBuyStrategy.decide_action_from_data(klines_ref, previous_price, acquired)
 
         if not acquired and action.is_buy():
             acquired = (1 - commission) / price
@@ -150,7 +153,7 @@ def simulate(**kwargs):
     commission = .001
 
     klines = read_data.read_klines_from_json(
-        file_path='data/binance_klines_ETHUSDT_1h_1558454400000.json')
+        file_path='data/binance_klines_ETHUSDT_1h_1502942400000.json')
 
     run_simulation(klines, n_ref=n_ref, commission=commission)
 

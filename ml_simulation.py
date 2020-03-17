@@ -8,13 +8,14 @@ import argparse
 import logging
 import math
 
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/binance_klines_BNBUSDT_15m_1509939900000.json'
+TEST_FILE_PATH = 'data/binance_klines_BTCUSDT_15m_1502942400000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = 0.5
 N_FEATURES = 1000
@@ -26,6 +27,7 @@ def run_simulation(klines, n_features, commission):
     money = [0.]
     acquired = None
     previous_price = float('inf')
+    sell_times = []
 
     from strategy.tensorflow import TensorFlowStrategy
     strat = TensorFlowStrategy(n_features=n_features, verbose=True)
@@ -54,6 +56,7 @@ def run_simulation(klines, n_features, commission):
             previous_price = price
             logging.info('Selling at {}; money: {}; time: {}'.format(
                 price, money[-1], current_time))
+            sell_times.append(current_time)
 
     market = (klines[-1].close_price -
               klines[n_start].close_price) / klines[n_start].close_price
@@ -66,7 +69,22 @@ def run_simulation(klines, n_features, commission):
     logging.info('Duration: {}; average money per month: {}; per year: {}'.format(
         duration, avg_per_month, avg_per_year_multiplier))
 
+    plot(klines, money, sell_times)
+
     return money
+
+
+def plot(klines, money, sell_times):
+    plt.subplot(2, 1, 1)
+    plt.plot([klines[0].close_time] + sell_times, money)
+
+    plt.subplot(2, 1, 2)
+    x = [kline.close_time for kline in klines]
+    y = [kline.close_price for kline in klines]
+    plt.plot(x, y)
+    plt.axhline(y=0)
+
+    plt.show()
 
 
 def simulate(**kwargs):

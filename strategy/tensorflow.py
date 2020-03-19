@@ -77,8 +77,8 @@ class TensorFlowStrategy:
         latest_klines = klines[n-self.n_features:n]
         log_returns = np.array(self.get_log_returns(
             [kline.close_price for kline in latest_klines])).reshape(1, -1)
-        if not acquired and np.argmax(self.buy_model.predict(log_returns)[0]) == 1:
+        if not acquired and np.argmax(self.buy_model.predict_on_batch(log_returns)[0]) == 1:
             return TradeAction('buy')
-        elif acquired and np.argmax(self.sell_model.predict(log_returns)[0]) == 1:
+        elif acquired and np.argmax(self.sell_model.predict_on_batch(log_returns)[0]) == 1:
             return TradeAction('sell')
         return TradeAction(None)

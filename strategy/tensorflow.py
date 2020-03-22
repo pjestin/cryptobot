@@ -10,7 +10,7 @@ from strategy.indicators import Indicators
 
 class TensorFlowStrategy:
 
-    LOOK_AHEAD = 20
+    LOOK_AHEAD = 10
     MIN_LOG_RETURN = 0.001
     MIN_LOG_RETURN_SELL = 0.02
 

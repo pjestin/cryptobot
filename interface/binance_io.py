@@ -77,7 +77,7 @@ class BinanceInterface():
             type=Client.ORDER_TYPE_MARKET,
             quantity=quantity,
         )
-        logging.debug(order)
+        logging.debug('Order: {}'.format(order))
         if not order or 'orderId' not in order:
             raise ValueError('No order ID in returned order')
         order_id = order['orderId']
@@ -89,7 +89,7 @@ class BinanceInterface():
                     symbol=currency_pair,
                     orderId=order_id
                 )
-                logging.debug(order)
+                logging.debug('Waiting on order: {}'.format(order))
         return order
 
     def server_time_diff(self):

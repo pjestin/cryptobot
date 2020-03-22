@@ -47,10 +47,10 @@ class TensorFlowStrategy:
         ])
 
         model.compile(optimizer='adam',
-                        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+                        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                         metrics=['accuracy'])
 
-        model.fit(X, y, epochs=5, verbose=2 if self.verbose else 0)
+        model.fit(X, y, epochs=3, verbose=2 if self.verbose else 0)
 
         if use_case == 'buy':
             self.buy_model = model

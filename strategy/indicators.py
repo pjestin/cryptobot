@@ -84,3 +84,13 @@ class Indicators:
             else:
                 decreases -= diff
         return 0. if increases == 0 and decreases == 0 else increases / (increases + decreases)
+
+    @classmethod
+    def log_returns(cls, x):
+        result = [0.]
+        previous_price = None
+        for price in x:
+            if previous_price:
+                result.append(math.log(price / previous_price))
+            previous_price = price
+        return result

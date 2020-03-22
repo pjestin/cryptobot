@@ -5,11 +5,12 @@ import numpy as np
 import tensorflow as tf
 
 from model import TradeAction
+from strategy.indicators import Indicators
 
 
 class TensorFlowStrategy:
 
-    LOOK_AHEAD = 10
+    LOOK_AHEAD = 20
     MIN_LOG_RETURN = 0.001
     MIN_LOG_RETURN_SELL = 0.02
 
@@ -19,20 +20,10 @@ class TensorFlowStrategy:
         self.n_features = n_features
         self.verbose = verbose
 
-    @classmethod
-    def get_log_returns(cls, prices):
-        log_returns = [0.]
-        previous_price = None
-        for price in prices:
-            if previous_price:
-                log_returns.append(math.log(price / previous_price))
-            previous_price = price
-        return log_returns
-
     def fit_model(self, klines, use_case):
         logging.debug("Use case: '{}'".format(use_case))
         n = len(klines)
-        log_returns = self.get_log_returns(
+        log_returns = Indicators.log_returns(
             [kline.close_price for kline in klines])
         X = []
         y = []
@@ -50,15 +41,13 @@ class TensorFlowStrategy:
         y = np.array(y)
 
         model = tf.keras.models.Sequential([
-            tf.keras.layers.Flatten(input_shape=(self.n_features, )),
             tf.keras.layers.Dense(128, activation='tanh'),
             tf.keras.layers.Dropout(0.2),
             tf.keras.layers.Dense(10)
         ])
 
         model.compile(optimizer='adam',
-                        loss=tf.keras.losses.SparseCategoricalCrossentropy(
-                            from_logits=True),
+                        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
                         metrics=['accuracy'])
 
         model.fit(X, y, epochs=5, verbose=2 if self.verbose else 0)
@@ -75,7 +64,7 @@ class TensorFlowStrategy:
         if abs(potential_log_return) < self.MIN_LOG_RETURN_SELL:
             return TradeAction(None)
         latest_klines = klines[n-self.n_features:n]
-        log_returns = np.array(self.get_log_returns(
+        log_returns = np.array(Indicators.log_returns(
             [kline.close_price for kline in latest_klines])).reshape(1, -1)
         if not acquired and np.argmax(self.buy_model.predict_on_batch(log_returns)[0]) == 1:
             return TradeAction('buy')

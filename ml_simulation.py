@@ -17,7 +17,7 @@ from model import TradeAction
 
 TEST_FILE_PATH = 'data/binance_klines_ETHUSDT_15m_1502942400000.json'
 COMMISSION = 0.001
-TRAIN_FACTOR = 0.5
+TRAIN_FACTOR = 1.
 N_FEATURES = 1000
 
 

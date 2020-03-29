@@ -22,16 +22,17 @@ COMMISSION = 0.001
 
 
 def fit(strat, currency_pair, interval):
-    rootdir = "data"
-    regex = re.compile('binance_klines_{}_{}_(\d*).json'.format(currency_pair.upper(), interval))
-    for root, dirs, files in os.walk(rootdir):
-        for file in files:
-            if regex.match(file):
-                klines_train = read_data.read_klines_from_json(file_path='data/{}'.format(file))
-                strat.fit_model(klines_train, 'buy')
-                strat.fit_model(klines_train, 'sell')
-                return
-    logging.error('No data file matched')
+    rootdir = "models"
+    for use_case in ['buy', 'sell']:
+        regex = re.compile('{}-{}-{}-.*'.format(currency_pair.upper(), interval, use_case))
+        for dir in os.listdir(rootdir):
+            if regex.match(dir):
+                strat.load_model(os.path.join(rootdir, dir), use_case)
+                break
+    if strat.buy_model is None:
+        logging.error('No data file matched for buy model')
+    if strat.sell_model is None:
+        logging.error('No data file matched for sell model')
 
 
 def run(params):

@@ -1,5 +1,6 @@
 import math
 import logging
+from datetime import datetime
 
 import numpy as np
 import tensorflow as tf
@@ -53,9 +54,17 @@ class TensorFlowStrategy:
         model.fit(X, y, epochs=3, verbose=2 if self.verbose else 0)
 
         if use_case == 'buy':
+            model.save('models/buy_{}'.format(datetime.utcnow().isoformat()))
             self.buy_model = model
         elif use_case == 'sell':
+            model.save('models/sell_{}'.format(datetime.utcnow().isoformat()))
             self.sell_model = model
+
+    def load_model(self, path, use_case):
+        if use_case == 'buy':
+            self.buy_model = tf.keras.models.load_model(path)
+        elif use_case == 'sell':
+            self.sell_model = tf.keras.models.load_model(path)
 
     def decide_action(self, klines, acquired, previous_price):
         n = len(klines)

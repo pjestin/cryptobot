@@ -89,6 +89,16 @@ class BinanceInterfaceTest(unittest.TestCase):
             endTime='now'
         )
 
+    def test_klines_error(self):
+        self.mock_client.get_klines.side_effect = ValueError('Not found')
+        self.binance.get_klines(
+            limit=2,
+            interval='5m',
+            currency_pair='BNBBTC',
+            start_time='2 years ago',
+            end_time='now'
+        )
+
     def test_dump_historical_klines(self):
         self.mock_client.get_historical_klines_generator.return_value = [
             self.kline1, self.kline2]

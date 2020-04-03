@@ -37,8 +37,8 @@ class BinanceInterface():
                 startTime=start_time,
                 endTime=end_time
             )
-        except:
-            logging.error('Error retrieving klines')
+        except Exception as e:
+            logging.error('Error retrieving klines: {}'.format(e))
         if not klines:
             logging.error('Kline data invalid')
             return None

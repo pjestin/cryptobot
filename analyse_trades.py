@@ -11,14 +11,15 @@ import matplotlib.pyplot as plt
 from interface.binance_io import BinanceInterface
 
 COMMISSION = 0.001
-CURRENCY_PAIRS = ['BNBUSDT', 'BTCUSDT', 'ETHUSDT', 'XRPUSDT']
+CURRENCY_PAIRS = ['BNBUSDT', 'BTCUSDT', 'ETHUSDT']
 
 
 def analyse_trades(currency_pairs, start_date=None):
     start_date_object = datetime.utcfromtimestamp(float(start_date))
+    binance = BinanceInterface()
 
-    for currency_pair in currency_pairs:
-        trades = BinanceInterface().my_trade_history(currency_pair)
+    for index, currency_pair in enumerate(currency_pairs):
+        trades = binance.my_trade_history(currency_pair)
         money = 0.0
         acquired_price = None
         t = [start_date]
@@ -41,9 +42,10 @@ def analyse_trades(currency_pairs, start_date=None):
                 t.append(trade.time)
                 x.append(money)
     
+        plt.subplot(len(CURRENCY_PAIRS), 1, index + 1)
+        plt.title(currency_pair)
         plt.plot(t, x)
     
-    plt.legend(currency_pairs)
     plt.show()
 
 

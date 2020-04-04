@@ -22,25 +22,27 @@ def analyse_trades(currency_pairs, start_date=None):
         trades = binance.my_trade_history(currency_pair)
         money = 0.0
         acquired_price = None
+        previous_price = None
         t = [start_date]
         x = [0.0]
 
         for trade in trades:
-            if start_date and datetime.utcfromtimestamp(float(trade.time / 1000)) < start_date_object:
+            if start_date and datetime.utcfromtimestamp(trade.time) < start_date_object:
                 continue
             if trade.is_buy:
                 if acquired_price:
-                    logging.error('Two buys in a row: {}, then {}'.format(acquired_price, trade.price))
+                    logging.error('Two buys in a row: {}, then {}'.format(previous_price, trade.price))
                     continue
                 acquired_price = trade.price
             else:
                 if not acquired_price:
-                    logging.error('Two sells in a row, second sell: {}'.format(trade.price))
+                    logging.error('Two sells in a row, {}, then {}'.format(previous_price, trade.price))
                     continue
                 money += trade.price / acquired_price * math.pow(1. - COMMISSION, 2) - 1.
                 acquired_price = None
                 t.append(trade.time)
                 x.append(money)
+            previous_price = trade.price
     
         plt.subplot(len(CURRENCY_PAIRS), 1, index + 1)
         plt.title(currency_pair)

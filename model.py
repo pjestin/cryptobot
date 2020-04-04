@@ -39,7 +39,7 @@ class Trade:
     def __init__(self, trade_data):
         self.id = trade_data['id']
         self.price = float(trade_data['price'])
-        self.time = trade_data['time']
+        self.time = float(trade_data['time'] / 1000)
         self.is_buy = trade_data['isBuyer']
 
     def __eq__(self, other):

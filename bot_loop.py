@@ -9,18 +9,30 @@ import sys
 import json
 from datetime import timedelta
 import os
+import re
 
+from interface import read_data
 from interface.binance_io import BinanceInterface
-from strategy.macd_rsi import MacdRsiStrategy
-from strategy.macd_ema import MacdEmaStrategy
-from strategy.macd import MacdStrategy
-from strategy.ema import EmaStrategy
-from strategy.logistic_regression import LogisticRegressionStrategy
-from strategy.tensorflow import TensorFlowStrategy
 
 LOG_FILE = 'log/{}.log'
 PROFILE_FILE = 'profiles.json'
 TIME_DIFF_FACTOR = 4.
+N_REF = 1000
+COMMISSION = 0.001
+
+
+def fit(strat, currency_pair, interval):
+    rootdir = "models"
+    for use_case in ['buy', 'sell']:
+        regex = re.compile('{}-{}-{}-.*'.format(currency_pair.upper(), interval, use_case))
+        for dir in os.listdir(rootdir):
+            if regex.match(dir):
+                strat.load_model(os.path.join(rootdir, dir), use_case)
+                break
+    if strat.buy_model is None:
+        logging.error('No data file matched for buy model')
+    if strat.sell_model is None:
+        logging.error('No data file matched for sell model')
 
 
 def run(params):
@@ -32,6 +44,7 @@ def run(params):
     quantity = params['quantity']
     interval = params['interval']
     acquired_price = params['acquired_price']
+    verbose = params['verbose']
 
     money = -1. if acquired_price else 0.
     price = None
@@ -42,6 +55,11 @@ def run(params):
     acquired = 1 / acquired_price if acquired_price else None
 
     binance = BinanceInterface()
+
+    from strategy.tensorflow import TensorFlowStrategy
+    strat = TensorFlowStrategy(n_features=n_ref, verbose=verbose)
+
+    fit(strat, currency_pair, interval)
 
     i = 0
     while True:
@@ -63,13 +81,7 @@ def run(params):
                     time.sleep(period)
                     continue
 
-            # action = MacdRsiStrategy.decide_action_from_data(klines)
-            # action = MacdEmaStrategy.decide_action_from_data(klines)
-            # action = MacdStrategy.decide_action_from_data(klines)
-            # action = EmaStrategy.decide_action_from_data(klines)
-            # action = LogisticRegressionStrategy.decide_action_from_data(
-            #     klines)
-            action = TensorFlowStrategy.decide_action_from_data(klines)
+            action = strat.decide_action(klines, acquired, previous_price)
             logging.debug('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
                           .format(i, money, nb_transactions, klines[-1].close_price / previous_price))
 
@@ -142,9 +154,10 @@ def main():
                             level=logging.INFO, handlers=handlers)
 
     params = {
-        "n_ref": 200,
-        "commission": 0.001,
+        "n_ref": N_REF,
+        "commission": COMMISSION,
         "simulate": args.simulate,
+        "verbose": args.verbose
     }
     params['acquired_price'] = float(
         args.acquired_price) if args.acquired_price else None

@@ -11,18 +11,18 @@ from strategy.indicators import Indicators
 
 class TensorFlowStrategy:
 
-    LOOK_AHEAD = 10
-    MIN_LOG_RETURN = 0.001
-    MIN_LOG_RETURN_SELL = 0.02
+    LOOK_AHEAD = 40
+    MIN_LOG_RETURN = 0.002
+    N_EPOCHS = 3
+    MIN_LOG_RETURN_SELL = 0.
 
     def __init__(self, n_features, verbose=False):
         self.buy_model = None
         self.sell_model = None
         self.n_features = n_features
         self.verbose = verbose
-
-    def fit_model(self, klines, use_case):
-        logging.debug("Use case: '{}'".format(use_case))
+    
+    def gather_data(self, klines, use_case):
         n = len(klines)
         log_returns = Indicators.log_returns(
             [kline.close_price for kline in klines])
@@ -37,9 +37,12 @@ class TensorFlowStrategy:
                 y.append(ahead_log_return > self.MIN_LOG_RETURN)
             elif use_case == 'sell':
                 y.append(ahead_log_return < -self.MIN_LOG_RETURN)
+        return (np.array(X), np.array(y))
 
-        X = np.array(X)
-        y = np.array(y)
+    def fit_model(self, klines, use_case):
+        logging.debug("Use case: '{}'".format(use_case))
+
+        X, y = self.gather_data(klines, use_case)
 
         model = tf.keras.models.Sequential([
             tf.keras.layers.Dense(128, activation='tanh'),
@@ -51,14 +54,22 @@ class TensorFlowStrategy:
                         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                         metrics=['accuracy'])
 
-        model.fit(X, y, epochs=3, verbose=2 if self.verbose else 0)
+        model.fit(X, y, epochs=self.N_EPOCHS, verbose=2 if self.verbose else 0)
 
         if use_case == 'buy':
-            model.save('models/buy_{}'.format(datetime.utcnow().isoformat()))
             self.buy_model = model
         elif use_case == 'sell':
-            model.save('models/sell_{}'.format(datetime.utcnow().isoformat()))
             self.sell_model = model
+
+    def save_models(self):
+        self.buy_model.save('models/buy_{}'.format(datetime.utcnow().isoformat()))
+        self.sell_model.save('models/sell_{}'.format(datetime.utcnow().isoformat()))
+
+    def evaluate_models(self, klines):
+        X_buy, y_buy = self.gather_data(klines, 'buy')
+        X_sell, y_sell = self.gather_data(klines, 'buy')
+        self.buy_model.evaluate(X_buy, y_buy, verbose=2 if self.verbose else 0)
+        self.sell_model.evaluate(X_sell, y_sell, verbose=2 if self.verbose else 0)
 
     def load_model(self, path, use_case):
         if use_case == 'buy':

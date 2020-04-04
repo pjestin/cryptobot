@@ -15,15 +15,15 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/binance_klines_ETHUSDT_15m_1502942400000.json'
+TEST_FILE_PATH = 'data/binance_klines_BNBUSDT_15m_1509939900000.json'
 COMMISSION = 0.001
-TRAIN_FACTOR = 1.
+TRAIN_FACTOR = .5
 N_FEATURES = 1000
 
 
-def run_simulation(klines, n_features, commission):
+def run_simulation(klines, n_features, commission, save):
     n = len(klines)
-    n_start = int(n * TRAIN_FACTOR)
+    n_start = n if save else int(n * TRAIN_FACTOR)
     money = [0.]
     acquired = None
     previous_price = float('inf')
@@ -33,8 +33,15 @@ def run_simulation(klines, n_features, commission):
     strat = TensorFlowStrategy(n_features=n_features, verbose=True)
 
     klines_train = klines[0:n_start]
-    strat.fit_model(klines_train, 'buy')
-    strat.fit_model(klines_train, 'sell')
+    for use_case in ['buy', 'sell']:
+        strat.fit_model(klines_train, use_case)
+
+    if save:
+        strat.save_models()
+        return
+    else:
+        klines_test = klines[n_start:] 
+        strat.evaluate_models(klines_test)
 
     for k in range(n_start + n_features, n):
         klines_ref = klines[k-n_features:k]
@@ -93,6 +100,8 @@ def simulate(**kwargs):
         description='Simulation on crypto currency trading strategies')
     parser.add_argument('-v', '--verbose',
                         help='Display more logs', action='store_true')
+    parser.add_argument('-s', '--save',
+                        help='Save model', action='store_true')
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
@@ -105,7 +114,7 @@ def simulate(**kwargs):
     klines = read_data.read_klines_from_json(
         file_path=TEST_FILE_PATH)
 
-    run_simulation(klines, n_features=N_FEATURES, commission=COMMISSION)
+    run_simulation(klines, n_features=N_FEATURES, commission=COMMISSION, save=args.save)
 
 
 if __name__ == '__main__':

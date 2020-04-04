@@ -16,5 +16,5 @@
         "interval": "15m",
         "quantity": 0.5,
         "period": 60
-    },
+    }
 }

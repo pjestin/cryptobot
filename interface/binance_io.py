@@ -53,7 +53,7 @@ class BinanceInterface():
             end_str=end_time
         ):
             klines.append(kline)
-        logging.debug('Number of klines: {}'.format(len(klines)))
+        logging.info('Number of klines: {}'.format(len(klines)))
         first_time = klines[0][0]
         file_name = 'data/binance_klines_{}_{}_{}.json'.format(
             currency_pair, interval, first_time)
@@ -77,19 +77,19 @@ class BinanceInterface():
             type=Client.ORDER_TYPE_MARKET,
             quantity=quantity,
         )
-        logging.debug('Order: {}'.format(order))
+        logging.info('Order: {}'.format(order))
         if not order or 'orderId' not in order:
             raise ValueError('No order ID in returned order')
         order_id = order['orderId']
         for _ in range(0, self.TIMEOUT):
             if not order or 'status' not in order or order['status'] != Client.ORDER_STATUS_FILLED:
-                logging.debug('Awaiting order filling...')
+                logging.info('Awaiting order filling...')
                 time.sleep(1)
                 order = self.client.get_order(
                     symbol=currency_pair,
                     orderId=order_id
                 )
-                logging.debug('Waiting on order: {}'.format(order))
+                logging.info('Waiting on order: {}'.format(order))
         return order
 
     def server_time_diff(self):

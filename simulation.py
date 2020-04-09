@@ -105,11 +105,7 @@ def simulate(**kwargs):
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
-    if args.verbose:
-        logging.basicConfig(format=log_format, level=logging.DEBUG)
-        logging.info('Verbose output.')
-    else:
-        logging.basicConfig(format=log_format, level=logging.INFO)
+    logging.basicConfig(format=log_format, level=logging.INFO)
 
     klines = read_data.read_klines_from_json(
         file_path=TEST_FILE_PATH)

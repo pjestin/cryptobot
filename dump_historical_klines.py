@@ -18,11 +18,7 @@ def main():
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
-    if args.verbose:
-        logging.basicConfig(format=log_format, level=logging.DEBUG)
-        logging.info('Verbose output.')
-    else:
-        logging.basicConfig(format=log_format, level=logging.INFO)
+    logging.basicConfig(format=log_format, level=logging.INFO)
     
     if not args.date:
         raise RuntimeError('Missing start date')

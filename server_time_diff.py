@@ -8,7 +8,7 @@ from interface.binance_io import BinanceInterface
 
 def main():
     log_format = '%(asctime)-15s %(message)s'
-    logging.basicConfig(format=log_format, level=logging.DEBUG)
+    logging.basicConfig(format=log_format, level=logging.INFO)
     BinanceInterface().server_time_diff()
 
 

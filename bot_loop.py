@@ -83,7 +83,7 @@ def run(params):
                     continue
 
             action = strat.decide_action(klines, acquired, previous_price)
-            logging.debug('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
+            logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
                           .format(i, money, nb_transactions, klines[-1].close_price / previous_price))
 
             # Buy or sell
@@ -146,13 +146,7 @@ def main():
         logging.FileHandler(log_file),
         logging.StreamHandler(sys.stdout)
     ]
-    if args.verbose:
-        logging.basicConfig(format=log_format,
-                            level=logging.DEBUG, handlers=handlers)
-        logging.info('Verbose output.')
-    else:
-        logging.basicConfig(format=log_format,
-                            level=logging.INFO, handlers=handlers)
+    logging.basicConfig(format=log_format, level=logging.INFO, handlers=handlers)
 
     params = {
         "n_ref": N_REF,

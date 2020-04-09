@@ -54,17 +54,12 @@ def analyse_trades(currency_pairs, start_date=None):
 def main():
 
     parser = argparse.ArgumentParser(description='Analyse history of Binance trades')
-    parser.add_argument('-v', '--verbose', help='Display more logs', action='store_true')
     parser.add_argument('-c', '--currency-pair', help='Curreny pair for which to resturn data (e.g. BTCUSDT)', dest='currency_pair')
     parser.add_argument('-d', '--date', help='Start date from which to retrieve trade history')
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
-    if args.verbose:
-        logging.basicConfig(format=log_format, level=logging.DEBUG)
-        logging.info('Verbose output.')
-    else:
-        logging.basicConfig(format=log_format, level=logging.INFO)
+    logging.basicConfig(format=log_format, level=logging.INFO)
     
     currency_pairs = [args.currency_pair] if args.currency_pair else CURRENCY_PAIRS
 

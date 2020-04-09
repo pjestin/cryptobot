@@ -62,8 +62,9 @@ class TensorFlowStrategy:
             self.sell_model = model
 
     def save_models(self):
-        self.buy_model.save('models/buy_{}'.format(datetime.utcnow().isoformat()))
-        self.sell_model.save('models/sell_{}'.format(datetime.utcnow().isoformat()))
+        now = datetime.utcnow()
+        self.buy_model.save('models/{}/buy-{}'.format(now.date.isoformat(), now.isoformat()))
+        self.sell_model.save('models/{}/sell-{}'.format(now.date.isoformat(), now.isoformat()))
 
     def evaluate_models(self, klines):
         X_buy, y_buy = self.gather_data(klines, 'buy')

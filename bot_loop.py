@@ -19,10 +19,11 @@ PROFILE_FILE = 'profiles.json'
 TIME_DIFF_FACTOR = 4.
 N_REF = 1000
 COMMISSION = 0.001
+MODEL_VERSION = '2020-03-29'
 
 
 def fit(strat, currency_pair, interval):
-    rootdir = "models"
+    rootdir = "models/{}".format(MODEL_VERSION)
     for use_case in ['buy', 'sell']:
         regex = re.compile('{}-{}-{}-.*'.format(currency_pair.upper(), interval, use_case))
         for dir in os.listdir(rootdir):

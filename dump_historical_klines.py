@@ -11,14 +11,13 @@ from model import Kline
 def main():
 
     parser = argparse.ArgumentParser(description='Retrieve kline data from Binance')
-    parser.add_argument('-v', '--verbose', help='Display more logs', action='store_true')
     parser.add_argument('-c', '--currency-pair', help='Curreny pair for which to resturn data (e.g. BTCUSDT)', dest='currency_pair')
     parser.add_argument('-i', '--interval', help='Interval of klines (e.g. "2h")')
     parser.add_argument('-d', '--date', help='Start date from which to retrieve kline (e.g. "2 years ago"')
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
-    logging.basicConfig(format=log_format, level=logging.INFO)
+    logging.basicConfig(format=log_format, level=logging.DEBUG)
     
     if not args.date:
         raise RuntimeError('Missing start date')

@@ -3,18 +3,21 @@
         "currency_pair": "BNBUSDT",
         "interval": "15m",
         "quantity": 5.0,
-        "period": 60
+        "period": 60,
+        "model_version": "2020-04-26"
     },
     "btcusdt": {
         "currency_pair": "BTCUSDT",
         "interval": "15m",
         "quantity": 0.01,
-        "period": 60
+        "period": 60,
+        "model_version": "2020-04-04"
     },
     "ethusdt": {
         "currency_pair": "ETHUSDT",
         "interval": "15m",
         "quantity": 0.5,
-        "period": 60
+        "period": 60,
+        "model_version": "2020-04-04"
     }
 }

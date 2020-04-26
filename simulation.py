@@ -48,8 +48,6 @@ def run_simulation(klines, n_features, commission, save):
 
         price = klines_ref[-1].close_price
         current_time = klines_ref[-1].close_time
-        logging.debug('Run {}; time: {}; money: {}; price: {}'.format(
-            k - n_features, current_time, money[-1], price))
 
         action = strat.decide_action(klines_ref, acquired, previous_price)
 
@@ -98,14 +96,12 @@ def simulate(**kwargs):
 
     parser = argparse.ArgumentParser(
         description='Simulation on crypto currency trading strategies')
-    parser.add_argument('-v', '--verbose',
-                        help='Display more logs', action='store_true')
     parser.add_argument('-s', '--save',
                         help='Save model', action='store_true')
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
-    logging.basicConfig(format=log_format, level=logging.INFO)
+    logging.basicConfig(format=log_format, level=logging.DEBUG)
 
     klines = read_data.read_klines_from_json(
         file_path=TEST_FILE_PATH)

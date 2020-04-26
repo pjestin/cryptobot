@@ -19,11 +19,10 @@ PROFILE_FILE = 'profiles.json'
 TIME_DIFF_FACTOR = 4.
 N_REF = 1000
 COMMISSION = 0.001
-MODEL_VERSION = '2020-03-29'
 
 
-def fit(strat, currency_pair, interval):
-    rootdir = "models/{}".format(MODEL_VERSION)
+def fit(strat, currency_pair, interval, model_version):
+    rootdir = "models/{}".format(model_version)
     for use_case in ['buy', 'sell']:
         regex = re.compile('{}-{}-{}-.*'.format(currency_pair.upper(), interval, use_case))
         for dir in os.listdir(rootdir):
@@ -45,7 +44,7 @@ def run(params):
     quantity = params['quantity']
     interval = params['interval']
     acquired_price = params['acquired_price']
-    verbose = params['verbose']
+    model_version = params['model_version']
 
     money = -1. if acquired_price else 0.
     price = None
@@ -58,9 +57,9 @@ def run(params):
     binance = BinanceInterface()
 
     from strategy.tensorflow import TensorFlowStrategy
-    strat = TensorFlowStrategy(n_features=n_ref, verbose=verbose)
+    strat = TensorFlowStrategy(n_features=n_ref, verbose=True)
 
-    fit(strat, currency_pair, interval)
+    fit(strat, currency_pair, interval, model_version)
 
     i = 0
     while True:
@@ -131,8 +130,6 @@ def read_profile(profile_name):
 def main():
 
     parser = argparse.ArgumentParser(description='Cryptocurrency trading bot')
-    parser.add_argument('-v', '--verbose',
-                        help='Display more logs', action='store_true')
     parser.add_argument(
         '-s', '--simulate', help='Do not make order, simulate only', action='store_true')
     parser.add_argument('-a', '--acquired-price',
@@ -146,13 +143,12 @@ def main():
         logging.FileHandler(log_file),
         logging.StreamHandler(sys.stdout)
     ]
-    logging.basicConfig(format=log_format, level=logging.INFO, handlers=handlers)
+    logging.basicConfig(format=log_format, level=logging.DEBUG, handlers=handlers)
 
     params = {
         "n_ref": N_REF,
         "commission": COMMISSION,
-        "simulate": args.simulate,
-        "verbose": args.verbose
+        "simulate": args.simulate
     }
     params['acquired_price'] = float(
         args.acquired_price) if args.acquired_price else None

@@ -195,4 +195,4 @@ class BinanceInterfaceTest(unittest.TestCase):
         self.mock_client.get_my_trades.assert_called_with(symbol='BTCUSDT')
         self.assertEqual(float(mock_trade['price']), trades[0].price)
         self.assertEqual(mock_trade['isBuyer'], trades[0].is_buy)
-        self.assertEqual(mock_trade['time'], trades[0].time)
+        self.assertEqual(mock_trade['time'] / 1000., trades[0].time)

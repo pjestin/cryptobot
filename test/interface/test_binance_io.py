@@ -196,3 +196,22 @@ class BinanceInterfaceTest(unittest.TestCase):
         self.assertEqual(float(mock_trade['price']), trades[0].price)
         self.assertEqual(mock_trade['isBuyer'], trades[0].is_buy)
         self.assertEqual(mock_trade['time'] / 1000., trades[0].time)
+
+    def test_last_trade(self):
+        mock_trade = {
+            "id": 28457,
+            "price": "4.00000100",
+            "qty": "12.00000000",
+            "commission": "10.10000000",
+            "commissionAsset": "BNB",
+            "time": 1499865549590,
+            "isBuyer": True,
+            "isMaker": False,
+            "isBestMatch": True
+        }
+        self.mock_client.get_my_trades.return_value = [mock_trade]
+        last_trade = self.binance.last_trade(currency_pair='BTCUSDT')
+        self.mock_client.get_my_trades.assert_called_with(symbol='BTCUSDT')
+        self.assertEqual(float(mock_trade['price']), last_trade.price)
+        self.assertEqual(mock_trade['isBuyer'], last_trade.is_buy)
+        self.assertEqual(mock_trade['time'] / 1000., last_trade.time)

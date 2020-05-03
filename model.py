@@ -46,3 +46,6 @@ class Trade:
         if not isinstance(other, Trade):
             return False
         return self.id == other.id
+
+    def __repr__(self):
+        return '<Trade id={} price={} time={} is_buy={}>'.format(self.id, self.price, self.time, self.is_buy)

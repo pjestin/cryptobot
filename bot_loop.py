@@ -43,8 +43,13 @@ def run(params):
     currency_pair = params['currency_pair']
     quantity = params['quantity']
     interval = params['interval']
-    acquired_price = params['acquired_price']
     model_version = params['model_version']
+
+    binance = BinanceInterface()
+
+    last_trade = binance.last_trade(currency_pair)
+    logging.info('Last trade in this currency pair: {}'.format(last_trade))
+    acquired_price = last_trade.price if last_trade and last_trade.is_buy else None
 
     money = -1. if acquired_price else 0.
     price = None
@@ -54,7 +59,6 @@ def run(params):
     previous_time = None
     acquired = 1 / acquired_price if acquired_price else None
 
-    binance = BinanceInterface()
 
     from strategy.tensorflow import TensorFlowStrategy
     strat = TensorFlowStrategy(n_features=n_ref, verbose=True)
@@ -123,7 +127,7 @@ def read_profile(profile_name):
     with open(PROFILE_FILE, newline='') as file:
         profiles = json.load(file)
         if profile_name not in profiles:
-            raise EnvironmentError('Profile file does not exist')
+            raise EnvironmentError('Profile name does not exist')
         return profiles[profile_name]
 
 
@@ -132,8 +136,6 @@ def main():
     parser = argparse.ArgumentParser(description='Cryptocurrency trading bot')
     parser.add_argument(
         '-s', '--simulate', help='Do not make order, simulate only', action='store_true')
-    parser.add_argument('-a', '--acquired-price',
-                        help='Price at which target currency was acquired', dest='acquired_price')
     parser.add_argument('-p', '--profile', help='Profile name')
     args = parser.parse_args()
 
@@ -150,8 +152,6 @@ def main():
         "commission": COMMISSION,
         "simulate": args.simulate
     }
-    params['acquired_price'] = float(
-        args.acquired_price) if args.acquired_price else None
 
     params = {**params, **read_profile(args.profile)}
 

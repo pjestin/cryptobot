@@ -106,3 +106,6 @@ class BinanceInterface():
     def my_trade_history(self, currency_pair):
         trades = self.client.get_my_trades(symbol=currency_pair)
         return [Trade(trade_data) for trade_data in trades]
+
+    def last_trade(self, currency_pair):
+        return self.my_trade_history(currency_pair)[-1]

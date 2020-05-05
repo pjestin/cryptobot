@@ -15,7 +15,7 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/binance_klines_BNBUSDT_15m_1509939900000.json'
+TEST_FILE_PATH = 'data/binance_klines_ETHUSDT_1h_1502942400000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = .5
 N_FEATURES = 1000
@@ -101,7 +101,7 @@ def simulate(**kwargs):
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
-    logging.basicConfig(format=log_format, level=logging.DEBUG)
+    logging.basicConfig(format=log_format, level=logging.INFO)
 
     klines = read_data.read_klines_from_json(
         file_path=TEST_FILE_PATH)

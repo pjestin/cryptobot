@@ -16,7 +16,7 @@ class TensorFlowStrategy:
     N_EPOCHS = 3
     MIN_LOG_RETURN_SELL = 0.
 
-    def __init__(self, n_feature):
+    def __init__(self, n_features):
         self.buy_model = None
         self.sell_model = None
         self.n_features = n_features
@@ -46,7 +46,7 @@ class TensorFlowStrategy:
         model = tf.keras.models.Sequential([
             tf.keras.layers.Dense(128, activation='tanh'),
             tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(10)
+            tf.keras.layers.Dense(2, activation='softmax')
         ])
 
         model.compile(optimizer='adam',

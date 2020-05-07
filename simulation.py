@@ -30,7 +30,7 @@ def run_simulation(klines, n_features, commission, save):
     sell_times = []
 
     from strategy.tensorflow import TensorFlowStrategy
-    strat = TensorFlowStrategy(n_features=n_features, verbose=True)
+    strat = TensorFlowStrategy(n_features=n_features)
 
     klines_train = klines[0:n_start]
     for use_case in ['buy', 'sell']:

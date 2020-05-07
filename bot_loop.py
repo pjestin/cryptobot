@@ -61,7 +61,7 @@ def run(params):
 
 
     from strategy.tensorflow import TensorFlowStrategy
-    strat = TensorFlowStrategy(n_features=n_ref, verbose=True)
+    strat = TensorFlowStrategy(n_features=n_ref)
 
     fit(strat, currency_pair, interval, model_version)
 

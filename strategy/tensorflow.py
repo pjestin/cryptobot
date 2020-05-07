@@ -16,11 +16,10 @@ class TensorFlowStrategy:
     N_EPOCHS = 3
     MIN_LOG_RETURN_SELL = 0.
 
-    def __init__(self, n_features, verbose=False):
+    def __init__(self, n_feature):
         self.buy_model = None
         self.sell_model = None
         self.n_features = n_features
-        self.verbose = verbose
     
     def gather_data(self, klines, use_case):
         n = len(klines)
@@ -54,7 +53,7 @@ class TensorFlowStrategy:
                         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                         metrics=['accuracy'])
 
-        model.fit(X, y, epochs=self.N_EPOCHS, verbose=2 if self.verbose else 0)
+        model.fit(X, y, epochs=self.N_EPOCHS, verbose=2)
 
         if use_case == 'buy':
             self.buy_model = model
@@ -69,8 +68,8 @@ class TensorFlowStrategy:
     def evaluate_models(self, klines):
         X_buy, y_buy = self.gather_data(klines, 'buy')
         X_sell, y_sell = self.gather_data(klines, 'buy')
-        self.buy_model.evaluate(X_buy, y_buy, verbose=2 if self.verbose else 0)
-        self.sell_model.evaluate(X_sell, y_sell, verbose=2 if self.verbose else 0)
+        self.buy_model.evaluate(X_buy, y_buy, verbose=2)
+        self.sell_model.evaluate(X_sell, y_sell, verbose=2)
 
     def load_model(self, path, use_case):
         if use_case == 'buy':

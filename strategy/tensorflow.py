@@ -13,7 +13,7 @@ class TensorFlowStrategy:
 
     LOOK_AHEAD = 40
     MIN_LOG_RETURN = 0.002
-    N_EPOCHS = 3
+    N_EPOCHS = 10
     MIN_LOG_RETURN_SELL = 0.
 
     def __init__(self, n_features):
@@ -44,13 +44,12 @@ class TensorFlowStrategy:
         X, y = self.gather_data(klines, use_case)
 
         model = tf.keras.models.Sequential([
-            tf.keras.layers.Dense(128, activation='tanh'),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(2, activation='softmax')
+            tf.keras.layers.Dense(50, input_dim=self.n_features, activation='tanh'),
+            tf.keras.layers.Dense(1, activation='sigmoid')
         ])
 
         model.compile(optimizer='adam',
-                        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                        loss='binary_crossentropy',
                         metrics=['accuracy'])
 
         model.fit(X, y, epochs=self.N_EPOCHS, verbose=2)
@@ -86,8 +85,8 @@ class TensorFlowStrategy:
         latest_klines = klines[n-self.n_features:n]
         log_returns = np.array(Indicators.log_returns(
             [kline.close_price for kline in latest_klines])).reshape(1, -1)
-        if not acquired and np.argmax(self.buy_model.predict_on_batch(log_returns)[0]) == 1:
+        if not acquired and self.buy_model.predict_on_batch(log_returns)[0][0] > 0.5:
             return TradeAction('buy')
-        elif acquired and np.argmax(self.sell_model.predict_on_batch(log_returns)[0]) == 1:
+        elif acquired and self.sell_model.predict_on_batch(log_returns)[0][0] > 0.5:
             return TradeAction('sell')
         return TradeAction(None)

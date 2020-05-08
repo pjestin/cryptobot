@@ -4,20 +4,20 @@
         "interval": "15m",
         "quantity": 5.0,
         "period": 60,
-        "model_version": "2020-04-26"
+        "model_version": "2020-05-08"
     },
     "btcusdt": {
         "currency_pair": "BTCUSDT",
         "interval": "15m",
         "quantity": 0.01,
         "period": 60,
-        "model_version": "2020-04-04"
+        "model_version": "2020-05-08"
     },
     "ethusdt": {
         "currency_pair": "ETHUSDT",
         "interval": "15m",
         "quantity": 0.5,
         "period": 60,
-        "model_version": "2020-04-04"
+        "model_version": "2020-05-08"
     }
 }

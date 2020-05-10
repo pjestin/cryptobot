@@ -50,6 +50,7 @@ def run(params):
     last_trade = binance.last_trade(currency_pair)
     logging.info('Last trade in this currency pair: {}'.format(last_trade))
     acquired_price = last_trade.price if last_trade and last_trade.is_buy else None
+    buy_quantity = last_trade.quantity if last_trade and last_trade.is_buy else None
 
     money = -1. if acquired_price else 0.
     price = None
@@ -58,7 +59,7 @@ def run(params):
     previous_transac_time = None
     previous_time = None
     acquired = 1 / acquired_price if acquired_price else None
-
+    buy_quantity_factor = None
 
     from strategy.tensorflow import TensorFlowStrategy
     strat = TensorFlowStrategy(n_features=n_ref)
@@ -95,12 +96,14 @@ def run(params):
                 previous_transac_time = klines[-1].close_time
                 price = binance.last_price(currency_pair)
                 previous_price = price
-                acquired = (1 - commission) / price
-                money -= 1
+                buy_quantity_factor = action.quantity_factor
+                buy_quantity = quantity * buy_quantity_factor
+                acquired = (1 - commission) * buy_quantity_factor / price
+                money -= buy_quantity_factor
                 logging.info('Buying at {}; money: {}'.format(price, money))
                 if not simulate:
                     binance.create_order(
-                        is_buy=True, quantity=quantity, currency_pair=currency_pair)
+                        is_buy=True, quantity=buy_quantity, currency_pair=currency_pair)
             elif acquired and action.is_sell():
                 nb_transactions += 1
                 previous_transac_time = klines[-1].close_time
@@ -111,7 +114,9 @@ def run(params):
                 logging.info('Selling at {}; money: {}'.format(price, money))
                 if not simulate:
                     binance.create_order(
-                        is_buy=False, quantity=quantity, currency_pair=currency_pair)
+                        is_buy=False, quantity=buy_quantity, currency_pair=currency_pair)
+                buy_quantity_factor = None
+                buy_quantity = None
 
         previous_time = time.time()
 

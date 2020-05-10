@@ -11,16 +11,25 @@ from strategy.indicators import Indicators
 
 class TensorFlowStrategy:
 
-    LOOK_AHEAD = 40
-    MIN_LOG_RETURN = 0.002
+    LOOK_AHEAD = 50
+    MIN_LOG_RETURN = 0.014
     N_EPOCHS = 10
-    MIN_LOG_RETURN_SELL = 0.
+    QUANTITY_FACTOR_POWER = 0.07
 
     def __init__(self, n_features):
         self.buy_model = None
         self.sell_model = None
         self.n_features = n_features
-    
+
+    def should_take_action(self, klines, use_case, k):
+        for i in range(k + 1, k + self.LOOK_AHEAD + 1):
+            log_return = math.log(klines[i].close_price / klines[k].close_price)
+            if log_return > self.MIN_LOG_RETURN:
+                return use_case == 'buy'
+            elif log_return < -self.MIN_LOG_RETURN:
+                return use_case == 'sell'
+        return False
+
     def gather_data(self, klines, use_case):
         n = len(klines)
         log_returns = Indicators.log_returns(
@@ -30,12 +39,8 @@ class TensorFlowStrategy:
         for k in range(self.n_features, n - self.LOOK_AHEAD):
             log_returns_ref = log_returns[k - self.n_features + 1:k + 1]
             X.append(log_returns_ref)
-            ahead_log_return = math.log(sum(klines[i].close_price for i in range(
-                k + 1, k + self.LOOK_AHEAD + 1)) / (self.LOOK_AHEAD * klines[k].close_price))
-            if use_case == 'buy':
-                y.append(ahead_log_return > self.MIN_LOG_RETURN)
-            elif use_case == 'sell':
-                y.append(ahead_log_return < -self.MIN_LOG_RETURN)
+            y.append(1 if self.should_take_action(klines, use_case, k) else 0)
+
         return (np.array(X), np.array(y))
 
     def fit_model(self, klines, use_case):
@@ -80,13 +85,13 @@ class TensorFlowStrategy:
         n = len(klines)
         potential_return = klines[-1].close_price / previous_price
         potential_log_return = math.log(potential_return) if potential_return != 0 else 1.
-        if abs(potential_log_return) < self.MIN_LOG_RETURN_SELL:
-            return TradeAction(None)
         latest_klines = klines[n-self.n_features:n]
         log_returns = np.array(Indicators.log_returns(
             [kline.close_price for kline in latest_klines])).reshape(1, -1)
-        if not acquired and self.buy_model.predict_on_batch(log_returns)[0][0] > 0.5:
-            return TradeAction('buy')
-        elif acquired and self.sell_model.predict_on_batch(log_returns)[0][0] > 0.5:
-            return TradeAction('sell')
+        buy_prediction = self.buy_model.predict_on_batch(log_returns)[0][0]
+        sell_prediction = self.sell_model.predict_on_batch(log_returns)[0][0]
+        if not acquired and buy_prediction > 0.5:
+            return TradeAction('buy', quantity_factor=((float(buy_prediction) - 0.5) * 2.) ** self.QUANTITY_FACTOR_POWER)
+        elif acquired and sell_prediction > 0.5:
+            return TradeAction('sell', quantity_factor=((float(sell_prediction) - 0.5) * 2.) ** self.QUANTITY_FACTOR_POWER)
         return TradeAction(None)

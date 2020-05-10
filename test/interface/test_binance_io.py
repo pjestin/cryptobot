@@ -196,6 +196,7 @@ class BinanceInterfaceTest(unittest.TestCase):
         self.assertEqual(float(mock_trade['price']), trades[0].price)
         self.assertEqual(mock_trade['isBuyer'], trades[0].is_buy)
         self.assertEqual(mock_trade['time'] / 1000., trades[0].time)
+        self.assertEqual(float(mock_trade['qty']), trades[0].quantity)
 
     def test_last_trade(self):
         mock_trade = {

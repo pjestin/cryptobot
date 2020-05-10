@@ -3,10 +3,11 @@ class TradeAction:
     SELL_ACTION = 'sell'
     ACTIONS = [BUY_ACTION, SELL_ACTION, None]
 
-    def __init__(self, action_type):
+    def __init__(self, action_type, quantity_factor=1.):
         if action_type not in self.ACTIONS:
             raise ValueError('Action type is not in {}'.format(self.ACTIONS))
         self.action_type = action_type
+        self.quantity_factor = quantity_factor
 
     def is_buy(self):
         return self.action_type and self.action_type == self.BUY_ACTION
@@ -41,6 +42,7 @@ class Trade:
         self.price = float(trade_data['price'])
         self.time = float(trade_data['time'] / 1000)
         self.is_buy = trade_data['isBuyer']
+        self.quantity = float(trade_data['qty'])
 
     def __eq__(self, other):
         if not isinstance(other, Trade):
@@ -48,4 +50,4 @@ class Trade:
         return self.id == other.id
 
     def __repr__(self):
-        return '<Trade id={} price={} time={} is_buy={}>'.format(self.id, self.price, self.time, self.is_buy)
+        return '<Trade id={} price={} time={} is_buy={} quantity={}>'.format(self.id, self.price, self.time, self.is_buy, self.quantity)

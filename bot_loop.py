@@ -45,6 +45,7 @@ def probe_and_act(klines, strat, binance, state):
     commission = state['commission']
     money = state['money']
     simulate = state['simulate']
+    currency_pair = state['currency_pair']
 
     if previous_transac_time:
         time_diff = timedelta(milliseconds=(

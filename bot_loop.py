@@ -19,6 +19,7 @@ PROFILE_FILE = 'profiles.json'
 TIME_DIFF_FACTOR = 4.
 N_REF = 1000
 COMMISSION = 0.001
+ROUND_DECIMAL = 6
 
 
 def fit(strat, currency_pair, interval, model_version):
@@ -61,11 +62,12 @@ def probe_and_act(klines, strat, binance, state):
     # Buy or sell
     if not acquired and action.is_buy():
         buy_quantity_factor = action.quantity_factor
-        buy_quantity = quantity * buy_quantity_factor
+        buy_quantity = float('%.3g' % (quantity * buy_quantity_factor))
+        logging.info('Buying {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
         if simulate:
             price = binance.last_price(currency_pair)
         else:
-            binance.create_order(
+            order = binance.create_order(
                 is_buy=True, quantity=buy_quantity, currency_pair=currency_pair)
             price = float(order['fills'][0]['price'])
         state['nb_transactions'] += 1
@@ -74,8 +76,8 @@ def probe_and_act(klines, strat, binance, state):
         state['buy_quantity_factor'] = buy_quantity_factor
         state['acquired'] = (1 - commission) * buy_quantity_factor / price
         state['money'] -= buy_quantity_factor
-        logging.info('Buying at {}; money: {}'.format(price, money))
     elif acquired and action.is_sell():
+        logging.info('Selling {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
         if simulate:
             price = binance.last_price(currency_pair)
         else:
@@ -89,7 +91,6 @@ def probe_and_act(klines, strat, binance, state):
         state['buy_quantity_factor'] = None
         state['acquired'] = None
         state['money'] += (1 - commission) * acquired * price
-        logging.info('Selling at {}; money: {}'.format(price, money))
 
 
 def run(params):

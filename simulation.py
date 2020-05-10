@@ -15,7 +15,7 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/binance_klines_ETHUSDT_15m_1502942400000.json'
+TEST_FILE_PATH = 'data/binance_klines_BNBUSDT_15m_1509939900000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = .5
 N_FEATURES = 1000
@@ -49,7 +49,7 @@ def run_simulation(klines, n_features, commission, save):
         price = klines_ref[-1].close_price
         current_time = klines_ref[-1].close_time
 
-        action = strat.decide_action(klines_ref, acquired, previous_price)
+        action = strat.decide_action(klines_ref, acquired)
 
         if not acquired and action.is_buy():
             acquired = (1 - commission) * action.quantity_factor / price

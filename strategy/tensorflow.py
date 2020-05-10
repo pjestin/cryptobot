@@ -81,10 +81,8 @@ class TensorFlowStrategy:
         elif use_case == 'sell':
             self.sell_model = tf.keras.models.load_model(path)
 
-    def decide_action(self, klines, acquired, previous_price):
+    def decide_action(self, klines, acquired):
         n = len(klines)
-        potential_return = klines[-1].close_price / previous_price
-        potential_log_return = math.log(potential_return) if potential_return != 0 else 1.
         latest_klines = klines[n-self.n_features:n]
         log_returns = np.array(Indicators.log_returns(
             [kline.close_price for kline in latest_klines])).reshape(1, -1)

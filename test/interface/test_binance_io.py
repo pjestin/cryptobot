@@ -179,24 +179,62 @@ class BinanceInterfaceTest(unittest.TestCase):
         self.assertEqual('No order ID in returned order', str(cm.exception))
 
     def test_my_trade_history(self):
-        mock_trade = {
+        mock_trade1 = {
             "id": 28457,
             "price": "4.00000100",
             "qty": "12.00000000",
-            "commission": "10.10000000",
-            "commissionAsset": "BNB",
-            "time": 1499865549590,
+            "time": 1499865549000,
             "isBuyer": True,
-            "isMaker": False,
-            "isBestMatch": True
         }
-        self.mock_client.get_my_trades.return_value = [mock_trade]
+        mock_trade2 = {
+            "id": 28458,
+            "price": "4.01000000",
+            "qty": "3.00000000",
+            "time": 1499865569000,
+            "isBuyer": True,
+        }
+        mock_trade3 = {
+            "id": 28459,
+            "price": "4.01000000",
+            "qty": "3.00000000",
+            "time": 1499865570000,
+            "isBuyer": False,
+        }
+        mock_trade4 = {
+            "id": 28460,
+            "price": "4.00000000",
+            "qty": "32.00000000",
+            "time": 1499865870000,
+            "isBuyer": False,
+        }
+        mock_trade5 = {
+            "id": 28461,
+            "price": "3.99000000",
+            "qty": "1.50000000",
+            "time": 1499865890000,
+            "isBuyer": False,
+        }
+
+        self.mock_client.get_my_trades.return_value = [mock_trade1, mock_trade2,
+            mock_trade3, mock_trade4, mock_trade5]
         trades = self.binance.my_trade_history(currency_pair='BTCUSDT')
         self.mock_client.get_my_trades.assert_called_with(symbol='BTCUSDT')
-        self.assertEqual(float(mock_trade['price']), trades[0].price)
-        self.assertEqual(mock_trade['isBuyer'], trades[0].is_buy)
-        self.assertEqual(mock_trade['time'] / 1000., trades[0].time)
-        self.assertEqual(float(mock_trade['qty']), trades[0].quantity)
+        self.assertEqual(3, len(trades))
+
+        self.assertEqual(float(mock_trade1['price']), trades[0].price)
+        self.assertTrue(trades[0].is_buy)
+        self.assertEqual(mock_trade1['time'] / 1000., trades[0].time)
+        self.assertEqual(float(mock_trade1['qty']) + float(mock_trade2['qty']), trades[0].quantity)
+
+        self.assertEqual(float(mock_trade3['price']), trades[1].price)
+        self.assertFalse(trades[1].is_buy)
+        self.assertEqual(mock_trade3['time'] / 1000., trades[1].time)
+        self.assertEqual(float(mock_trade3['qty']), trades[1].quantity)
+
+        self.assertEqual(float(mock_trade4['price']), trades[2].price)
+        self.assertFalse(trades[2].is_buy)
+        self.assertEqual(mock_trade4['time'] / 1000., trades[2].time)
+        self.assertEqual(float(mock_trade4['qty']) + float(mock_trade5['qty']), trades[2].quantity)
 
     def test_last_trade(self):
         mock_trade = {

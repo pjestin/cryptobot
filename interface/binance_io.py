@@ -104,8 +104,20 @@ class BinanceInterface():
             time.sleep(2)
 
     def my_trade_history(self, currency_pair):
-        trades = self.client.get_my_trades(symbol=currency_pair)
-        return [Trade(trade_data) for trade_data in trades]
+        trade_data = self.client.get_my_trades(symbol=currency_pair)
+        trades = [Trade(trade) for trade in trade_data]
+        merged_trades = []
+        previous_trade_time = None
+        previous_trade_is_buy = None
+        for trade in trades:
+            if previous_trade_time and abs(trade.time - previous_trade_time) < 60. \
+                    and trade.is_buy == previous_trade_is_buy:
+                merged_trades[-1].quantity += trade.quantity
+            else:
+                merged_trades.append(trade)
+            previous_trade_time = trade.time
+            previous_trade_is_buy = trade.is_buy
+        return merged_trades
 
     def last_trade(self, currency_pair):
         return self.my_trade_history(currency_pair)[-1]

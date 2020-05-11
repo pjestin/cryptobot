@@ -107,7 +107,7 @@ def run(params):
     last_trade = binance.last_trade(currency_pair)
     logging.info('Last trade in this currency pair: {}'.format(last_trade))
     acquired_price = last_trade.price if last_trade and last_trade.is_buy else None
-    buy_quantity = last_trade.quantity if last_trade and last_trade.is_buy else None
+    buy_quantity = float('%.3g' % (last_trade.quantity)) if last_trade and last_trade.is_buy else None
     buy_quantity_factor = float('%.3g' % (buy_quantity / quantity)) if buy_quantity else None
 
     from strategy.tensorflow import TensorFlowStrategy

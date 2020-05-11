@@ -47,6 +47,7 @@ def probe_and_act(klines, strat, binance, state):
     money = state['money']
     simulate = state['simulate']
     currency_pair = state['currency_pair']
+    period = state['period']
 
     if previous_transac_time:
         time_diff = timedelta(milliseconds=(
@@ -99,6 +100,7 @@ def run(params):
     currency_pair = params['currency_pair']
     interval = params['interval']
     model_version = params['model_version']
+    quantity = params['quantity']
 
     binance = BinanceInterface()
 
@@ -106,18 +108,19 @@ def run(params):
     logging.info('Last trade in this currency pair: {}'.format(last_trade))
     acquired_price = last_trade.price if last_trade and last_trade.is_buy else None
     buy_quantity = last_trade.quantity if last_trade and last_trade.is_buy else None
+    buy_quantity_factor = buy_quantity / quantity if buy_quantity else None
 
     from strategy.tensorflow import TensorFlowStrategy
     strat = TensorFlowStrategy(n_features=n_ref)
     fit(strat, currency_pair, interval, model_version)
     
     state = {
-        'money': -1. if acquired_price else 0.,
+        'money': -buy_quantity_factor if buy_quantity_factor else 0.,
         'previous_price': acquired_price if acquired_price else float('inf'),
         'nb_transactions': 0,
         'previous_transac_time': None,
-        'acquired': 1 / acquired_price if acquired_price else None,
-        'buy_quantity_factor': None,
+        'acquired': buy_quantity_factor / acquired_price if acquired_price else None,
+        'buy_quantity_factor': buy_quantity_factor,
         'buy_quantity': buy_quantity,
     }
 

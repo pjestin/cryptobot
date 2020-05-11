@@ -108,7 +108,7 @@ def run(params):
     logging.info('Last trade in this currency pair: {}'.format(last_trade))
     acquired_price = last_trade.price if last_trade and last_trade.is_buy else None
     buy_quantity = last_trade.quantity if last_trade and last_trade.is_buy else None
-    buy_quantity_factor = buy_quantity / quantity if buy_quantity else None
+    buy_quantity_factor = float('%.3g' % (buy_quantity / quantity)) if buy_quantity else None
 
     from strategy.tensorflow import TensorFlowStrategy
     strat = TensorFlowStrategy(n_features=n_ref)

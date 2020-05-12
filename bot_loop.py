@@ -71,6 +71,7 @@ def probe_and_act(klines, strat, binance, state):
             order = binance.create_order(
                 is_buy=True, quantity=buy_quantity, currency_pair=currency_pair)
             price = float(order['fills'][0]['price'])
+        state['previous_price'] = price
         state['nb_transactions'] += 1
         state['previous_transac_time'] = klines[-1].close_time
         state['buy_quantiy'] = buy_quantity

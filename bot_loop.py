@@ -74,7 +74,7 @@ def probe_and_act(klines, strat, binance, state):
         state['previous_price'] = price
         state['nb_transactions'] += 1
         state['previous_transac_time'] = klines[-1].close_time
-        state['buy_quantiy'] = buy_quantity
+        state['buy_quantity'] = buy_quantity
         state['buy_quantity_factor'] = buy_quantity_factor
         state['acquired'] = (1 - commission) * buy_quantity_factor / price
         state['money'] -= buy_quantity_factor
@@ -89,7 +89,7 @@ def probe_and_act(klines, strat, binance, state):
         state['previous_price'] = price
         state['nb_transactions'] += 1
         state['previous_transac_time'] = klines[-1].close_time
-        state['buy_quantiy'] = None
+        state['buy_quantity'] = None
         state['buy_quantity_factor'] = None
         state['acquired'] = None
         state['money'] += (1 - commission) * acquired * price

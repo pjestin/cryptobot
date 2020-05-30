@@ -13,4 +13,4 @@ RUN python -m pip install https://github.com/lhelontra/tensorflow-on-arm/release
 RUN python -m pip install -r /python/requirements.txt
 ENV profile no_profile
 ENV simulate false
-CMD python bot_loop.py -p ${profile} $([ $simulate = false ] && echo "-s")
+CMD python bot_loop.py -p ${profile} $([ $simulate = true ] && echo "-s")

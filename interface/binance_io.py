@@ -45,14 +45,12 @@ class BinanceInterface():
         return [Kline(kline_data) for kline_data in klines]
 
     def dump_historical_klines(self, interval, currency_pair, start_time, end_time):
-        klines = []
-        for kline in self.client.get_historical_klines_generator(
+        klines = list(self.client.get_historical_klines_generator(
             symbol=currency_pair,
             interval=interval,
             start_str=start_time,
             end_str=end_time
-        ):
-            klines.append(kline)
+        ))
         logging.info('Number of klines: {}'.format(len(klines)))
         first_time = klines[0][0]
         file_name = 'data/binance_klines_{}_{}_{}.json'.format(

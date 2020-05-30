@@ -11,9 +11,9 @@ from strategy.indicators import Indicators
 
 class TensorFlowStrategy:
 
-    LOOK_AHEAD = 50
-    MIN_LOG_RETURN = 0.014
-    N_EPOCHS = 10
+    LOOK_AHEAD = 40
+    MIN_LOG_RETURN = 0.002
+    N_EPOCHS = 5
     QUANTITY_FACTOR_POWER = 0.07
 
     def __init__(self, n_features):
@@ -22,12 +22,12 @@ class TensorFlowStrategy:
         self.n_features = n_features
 
     def should_take_action(self, klines, use_case, k):
-        for i in range(k + 1, k + self.LOOK_AHEAD + 1):
-            log_return = math.log(klines[i].close_price / klines[k].close_price)
-            if log_return > self.MIN_LOG_RETURN:
-                return use_case == 'buy'
-            elif log_return < -self.MIN_LOG_RETURN:
-                return use_case == 'sell'
+        ahead_log_return = math.log(sum(klines[i].close_price for i in range(
+                k + 1, k + self.LOOK_AHEAD + 1)) / (self.LOOK_AHEAD * klines[k].close_price))
+        if use_case == 'buy':
+            return ahead_log_return > self.MIN_LOG_RETURN
+        elif use_case == 'sell':
+            return ahead_log_return < -self.MIN_LOG_RETURN
         return False
 
     def gather_data(self, klines, use_case):

@@ -13,7 +13,7 @@ class TensorFlowStrategy:
 
     LOOK_AHEAD = 40
     MIN_LOG_RETURN = 0.002
-    N_EPOCHS = 5
+    N_EPOCHS = 10
     QUANTITY_FACTOR_POWER = 0.07
 
     def __init__(self, n_features):

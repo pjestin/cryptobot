@@ -61,7 +61,7 @@ def probe_and_act(klines, strat, binance, state):
 
     # Buy or sell
     if not acquired and action.is_buy():
-        buy_quantity_factor = action.quantity_factor
+        buy_quantity_factor = 1. #action.quantity_factor
         buy_quantity = float('%.3g' % (quantity * buy_quantity_factor))
         logging.info('Buying {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
         if simulate:

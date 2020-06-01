@@ -52,7 +52,7 @@ def run_simulation(klines, n_features, commission, save):
         action = strat.decide_action(klines_ref, acquired)
 
         if not acquired and action.is_buy():
-            acquired = (1 - commission) * action.quantity_factor / price
+            acquired = (1 - commission) / price
             previous_price = price
             logging.info('Buying at {}'.format(price))
         elif acquired and action.is_sell():

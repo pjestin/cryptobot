@@ -2,7 +2,7 @@
 # coding: utf-8
 
 
-from datetime import timedelta
+from datetime import timedelta, date
 import time
 import argparse
 import logging
@@ -59,8 +59,8 @@ def run_simulation(klines, n_features, commission, save):
             money.append(money[-1] + ((1 - commission) * price - previous_price) * acquired)
             acquired = None
             previous_price = price
-            logging.info('Selling at {}; money: {}; time: {}'.format(
-                price, money[-1], current_time))
+            logging.info('Selling at {}; money: {}; date: {}'.format(
+                price, money[-1], date.fromtimestamp(current_time / 1000).isoformat()))
             sell_times.append(current_time)
 
     market = (klines[-1].close_price -

@@ -19,7 +19,6 @@ PROFILE_FILE = 'profiles.json'
 TIME_DIFF_FACTOR = 4.
 N_REF = 1000
 COMMISSION = 0.001
-ROUND_DECIMAL = 6
 
 
 def fit(strat, currency_pair, interval, model_version):

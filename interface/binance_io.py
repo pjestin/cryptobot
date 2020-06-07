@@ -1,9 +1,10 @@
 import json
 import logging
 import time
+import datetime
 
 from binance.client import Client
-from model import Kline, Trade
+from model import Kline, Trade, Depth
 
 
 class BinanceInterface():
@@ -53,7 +54,7 @@ class BinanceInterface():
         ))
         logging.info('Number of klines: {}'.format(len(klines)))
         first_time = klines[0][0]
-        file_name = 'data/binance_klines_{}_{}_{}.json'.format(
+        file_name = 'data/klines/binance_klines_{}_{}_{}.json'.format(
             currency_pair, interval, first_time)
         with open(file_name, mode='w') as file:
             json.dump(klines, file)
@@ -119,3 +120,9 @@ class BinanceInterface():
 
     def last_trade(self, currency_pair):
         return self.my_trade_history(currency_pair)[-1]
+    
+    def get_current_depth(self, currency_pair, limit=None):
+        return Depth(
+            self.client.get_order_book(symbol=currency_pair, limit=limit),
+            datetime.datetime.utcnow()
+        )

@@ -1,6 +1,8 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import os
+import json
+from datetime import datetime
 
 from interface.binance_io import BinanceInterface
 from model import Kline
@@ -9,11 +11,12 @@ from interface import read_data
 
 class BinanceInterfaceTest(unittest.TestCase):
 
-    TEST_DATA_FILE = 'data/binance_klines_DOGEUSDT_2m_1509926400000.json'
+    TEST_KLINE_DATA_FILE = 'data/klines/binance_klines_DOGEUSDT_2m_1509926400000.json'
+    TEST_DEPTH_DATA_FILE = 'test/data/depth.json'
 
     def setUp(self):
-        if os.path.isfile(self.TEST_DATA_FILE):
-            os.remove(self.TEST_DATA_FILE)
+        if os.path.isfile(self.TEST_KLINE_DATA_FILE):
+            os.remove(self.TEST_KLINE_DATA_FILE)
 
         self.mock_client = MagicMock()
         self.binance = BinanceInterface(self.mock_client)
@@ -46,10 +49,12 @@ class BinanceInterfaceTest(unittest.TestCase):
             '42788.24647100',
             '102286567.18669863'
         ]
+        with open(self.TEST_DEPTH_DATA_FILE, mode='r') as file:
+            self.depth_data = json.load(file)
 
     def tearDown(self):
-        if os.path.isfile(self.TEST_DATA_FILE):
-            os.remove(self.TEST_DATA_FILE)
+        if os.path.isfile(self.TEST_KLINE_DATA_FILE):
+            os.remove(self.TEST_KLINE_DATA_FILE)
 
     def test_recent_trades(self):
         self.mock_client.get_recent_trades.return_value = [
@@ -108,7 +113,7 @@ class BinanceInterfaceTest(unittest.TestCase):
             start_time='2 years ago',
             end_time='now'
         )
-        kline_data = read_data.read_klines_from_json(self.TEST_DATA_FILE)
+        kline_data = read_data.read_klines_from_json(self.TEST_KLINE_DATA_FILE)
         self.assertEqual([Kline(self.kline1), Kline(self.kline2)], kline_data)
 
     def test_last_price(self):
@@ -254,3 +259,17 @@ class BinanceInterfaceTest(unittest.TestCase):
         self.assertEqual(float(mock_trade['price']), last_trade.price)
         self.assertEqual(mock_trade['isBuyer'], last_trade.is_buy)
         self.assertEqual(mock_trade['time'] / 1000., last_trade.time)
+
+    @patch('datetime.datetime')
+    def test_get_current_depth(self, mocked_datetime):
+        mocked_datetime.utcnow.return_value = datetime(2017, 10, 15)
+        self.mock_client.get_order_book.return_value = self.depth_data
+        depth = self.binance.get_current_depth(currency_pair='BTCUSDT', limit=100)
+        self.mock_client.get_order_book.assert_called_with(symbol='BTCUSDT', limit=100)
+        self.assertEqual(datetime(2017, 10, 15), depth.time)
+        self.assertEqual(100, len(depth.bids))
+        self.assertEqual(100, len(depth.asks))
+        self.assertEqual(235.86, depth.bids[0].price)
+        self.assertEqual(8.87008, depth.bids[0].quantity)
+        self.assertEqual(235.89, depth.asks[0].price)
+        self.assertEqual(65.0, depth.asks[0].quantity)

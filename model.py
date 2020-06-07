@@ -51,3 +51,29 @@ class Trade:
 
     def __repr__(self):
         return '<Trade id={} price={} time={} is_buy={} quantity={}>'.format(self.id, self.price, self.time, self.is_buy, self.quantity)
+
+
+class Depth:
+
+    class Unit:
+        def __init__(self, price, quantity):
+            self.price = price
+            self.quantity = quantity
+        
+        def to_json(self):
+            return {
+                'price': self.price,
+                'quantity': self.quantity
+            }
+
+    def __init__(self, depth_data, depth_time):
+        self.time = depth_time
+        self.bids = [self.Unit(float(price), float(quantity)) for price, quantity in depth_data['bids']]
+        self.asks = [self.Unit(float(price), float(quantity)) for price, quantity in depth_data['asks']]
+
+    def to_json(self):
+        return {
+            'time': self.time.isoformat(),
+            'bids': [unit.to_json() for unit in self.bids],
+            'asks': [unit.to_json() for unit in self.asks]
+        }

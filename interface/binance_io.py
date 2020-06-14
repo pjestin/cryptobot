@@ -122,7 +122,6 @@ class BinanceInterface():
         return self.my_trade_history(currency_pair)[-1]
     
     def get_current_depth(self, currency_pair, limit=None):
-        return Depth(
-            self.client.get_order_book(symbol=currency_pair, limit=limit),
-            datetime.datetime.utcnow()
-        )
+        depth_data = self.client.get_order_book(symbol=currency_pair, limit=limit)
+        depth_data['time'] = datetime.datetime.utcnow().isoformat()
+        return Depth.from_binance_json(depth_data)

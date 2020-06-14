@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 class TradeAction:
     BUY_ACTION = 'buy'
     SELL_ACTION = 'sell'
@@ -61,15 +64,33 @@ class Depth:
             self.quantity = quantity
         
         def to_json(self):
-            return {
-                'price': self.price,
-                'quantity': self.quantity
-            }
+            return [self.price, self.quantity]
+        
+        @classmethod
+        def from_json(cls, unit_data):
+            return cls(unit_data[0], unit_data[1])
+        
+        def __eq__(self, other):
+            return self.price == other.price and self.quantity == other.quantity
 
-    def __init__(self, depth_data, depth_time):
+    def __init__(self, depth_time, depth_bids, depth_asks):
         self.time = depth_time
-        self.bids = [self.Unit(float(price), float(quantity)) for price, quantity in depth_data['bids']]
-        self.asks = [self.Unit(float(price), float(quantity)) for price, quantity in depth_data['asks']]
+        self.bids = depth_bids
+        self.asks = depth_asks
+
+    @classmethod
+    def from_binance_json(cls, binance_json_data):
+        depth_time = datetime.fromisoformat(binance_json_data['time'])
+        depth_bids = [cls.Unit(float(price), float(quantity)) for price, quantity in binance_json_data['bids']]
+        depth_asks = [cls.Unit(float(price), float(quantity)) for price, quantity in binance_json_data['asks']]
+        return cls(depth_time, depth_bids, depth_asks)
+
+    @classmethod
+    def from_db_json(cls, db_json_data):
+        depth_time = datetime.fromisoformat(db_json_data['time'])
+        depth_bids = [cls.Unit.from_json(unit) for unit in db_json_data['bids']]
+        depth_asks = [cls.Unit.from_json(unit) for unit in db_json_data['asks']]
+        return cls(depth_time, depth_bids, depth_asks)
 
     def to_json(self):
         return {

@@ -18,7 +18,8 @@ PERIOD = 60
 
 def dump_depth(binance_interface, currency_pair, limit):
     depth = binance_interface.get_current_depth(currency_pair=currency_pair, limit=limit)
-    DepthDb.extend(depth, currency_pair, limit)
+    if depth:
+        DepthDb.extend(depth, currency_pair, limit)
 
 
 def run(currency_pair):

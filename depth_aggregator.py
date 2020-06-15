@@ -16,20 +16,22 @@ ORDER_BOOK_LIMITS = [100, 1000]
 PERIOD = 60
 
 
-def dump_depth(binance_interface, currency_pair, limit):
-    depth = binance_interface.get_current_depth(currency_pair=currency_pair, limit=limit)
+def dump_depth(binance_interface, depth_db):
+    depth = binance_interface.get_current_depth(currency_pair=depth_db.currency_pair,
+        limit=depth_db.limit)
     if depth:
-        DepthDb.extend(depth, currency_pair, limit)
+        depth_db.extend(depth)
 
 
 def run(currency_pair):
     binance_interface = BinanceInterface()
+    depth_dbs = [DepthDb(currency_pair, limit, date.today()) for limit in ORDER_BOOK_LIMITS]
 
     while True:
         begin_time = time.time()
 
-        for limit in ORDER_BOOK_LIMITS:
-            dump_depth(binance_interface, currency_pair, limit)
+        for depth_db in depth_dbs:
+            dump_depth(binance_interface, depth_db)
         
         duration = time.time() - begin_time
         if duration < PERIOD:

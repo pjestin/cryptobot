@@ -4,7 +4,7 @@
 import json
 import os
 import math
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import logging
 
 from interface import read_data
@@ -13,9 +13,10 @@ from strategy.depth.linear_regression import DepthLinearRegressionStrategy
 from strategy.depth.deep_learning import DepthDeepLearningStrategy
 
 CURRENCY_PAIR = 'ETHUSDT'
-LIMIT = 1000
+LIMIT = 100
 COMMISSION = 0.001
-TEST_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_1m_1591467840000.json'
+KLINE_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_1m_1592073960000.json'
+DEPTH_FILE_DATE = date(2020, 6, 15)
 TRAIN_FACTOR = 0.5
 
 
@@ -23,13 +24,15 @@ def simulate():
     log_format = '%(asctime)-15s %(message)s'
     logging.basicConfig(format=log_format, level=logging.INFO)
 
-    depth_data = DepthDb.read(CURRENCY_PAIR, LIMIT)
+    # depth_data = DepthDb(CURRENCY_PAIR, LIMIT, DEPTH_FILE_DATE).read()
+    depth_data = DepthDb(CURRENCY_PAIR, LIMIT, date(2020, 6, 14)).read() \
+        + DepthDb(CURRENCY_PAIR, LIMIT, date(2020, 6, 15)).read()
 
     # Deep learning
     n = len(depth_data)
     save = False
     n_start = n if save else int(n * TRAIN_FACTOR)
-    klines = read_data.read_klines_from_json(file_path=TEST_FILE_PATH)
+    klines = read_data.read_klines_from_json(file_path=KLINE_FILE_PATH)
     strat = DepthDeepLearningStrategy()
     depth_train = depth_data[0:n_start]
     depth_test = depth_data[n_start:]

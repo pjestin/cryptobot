@@ -10,8 +10,8 @@ from model import TradeAction
 
 class DepthDeepLearningStrategy:
 
-    LOOK_AHEAD = timedelta(hours=1)
-    MIN_LOG_RETURN = 0.001
+    LOOK_AHEAD = timedelta(minutes=5)
+    MIN_LOG_RETURN = 0.0003
     N_EPOCHS = 3
     QUANTITY_FACTOR_POWER = 0.
 
@@ -26,9 +26,9 @@ class DepthDeepLearningStrategy:
                 + [unit.price for unit in depth.asks] \
                 + [unit.quantity for unit in depth.asks]
     
-    def should_take_action(self, klines, use_case, k):
+    def should_take_action(self, klines, use_case, current, look_ahead):
         ahead_log_return = math.log(sum(klines[i].close_price for i in range(
-                k + 1, k + self.LOOK_AHEAD + 1)) / (self.LOOK_AHEAD * klines[k].close_price))
+                current + 1, look_ahead + 1)) / ((look_ahead - current) * klines[current].close_price))
         if use_case == 'buy':
             return ahead_log_return > self.MIN_LOG_RETURN
         elif use_case == 'sell':
@@ -53,7 +53,7 @@ class DepthDeepLearningStrategy:
                 break
 
             X.append(self.depth_features(depth))
-            y.append(1 if self.should_take_action(klines, use_case, current_kline_index) else 0)
+            y.append(1 if self.should_take_action(klines, use_case, current_kline_index, look_ahead_kline_index) else 0)
     
         return (np.array(X), np.array(y))
 
@@ -79,7 +79,7 @@ class DepthDeepLearningStrategy:
             self.sell_model = model
 
     def decide_action(self, depth, acquired):
-        depth_features = self.depth_features(depth).reshape(1, -1)
+        depth_features = np.array(self.depth_features(depth)).reshape(1, -1)
         buy_prediction = self.buy_model.predict_on_batch(depth_features)[0][0]
         sell_prediction = self.sell_model.predict_on_batch(depth_features)[0][0]
         if not acquired and buy_prediction > 0.5:

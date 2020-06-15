@@ -20,25 +20,26 @@ class DepthDbTest(unittest.TestCase):
         })
         self.currency_pair = 'DOGEUSDT'
         self.limit = 500
+        self.depth_db = DepthDb(self.currency_pair, self.limit, self.now.date())
     
     def tearDown(self):
         if os.path.isfile(self.TEST_DB_FILE):
             os.remove(self.TEST_DB_FILE)
 
     def test_extend(self):
-        DepthDb.extend(self.depth, self.currency_pair, self.limit)
+        self.depth_db.extend(self.depth)
         self.assertTrue(os.path.isfile(self.TEST_DB_FILE))
 
     def test_read(self):
-        DepthDb.extend(self.depth, self.currency_pair, self.limit)
-        depth_data = DepthDb.read(self.currency_pair, self.limit)
+        self.depth_db.extend(self.depth)
+        depth_data = self.depth_db.read()
         self.assertEqual(1, len(depth_data))
         self.assertEqual(self.depth.time, depth_data[0].time)
         self.assertEqual(self.depth.bids, depth_data[0].bids)
         self.assertEqual(self.depth.asks, depth_data[0].asks)
     
     def test_multiple_extends(self):
-        DepthDb.extend(self.depth, self.currency_pair, self.limit)
-        DepthDb.extend(self.depth, self.currency_pair, self.limit)
-        depth_data = DepthDb.read(self.currency_pair, self.limit)
+        self.depth_db.extend(self.depth)
+        self.depth_db.extend(self.depth)
+        depth_data = self.depth_db.read()
         self.assertEqual(2, len(depth_data))

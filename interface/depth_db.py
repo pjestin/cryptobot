@@ -16,19 +16,13 @@ class DepthDb:
 
     def read(self):
         with open(self.file_path, mode='r') as file:
-            depth_data = [Depth.from_db_json(depth_data_as_json) for depth_data_as_json in json.load(file)]
+            depth_data = [Depth.from_db_json(json.loads(line)) for line in file.readlines()]
         logging.debug('Depth data size: {}'.format(len(depth_data)))
         return sorted(depth_data, key=lambda depth: depth.time)
 
     def extend(self, depth):
         logging.debug('Adding depth data to file {}'.format(self.file_path))
+        with open(self.file_path, mode='a') as file:
+            file.write('{}\n'.format(json.dumps(depth.to_json())))
+        logging.debug('Depth file written')
 
-        if not os.path.isfile(self.file_path):
-            with open(self.file_path, mode='a') as file:
-                json.dump([], file)
-
-        with open(self.file_path, mode='r') as file:
-            depth_data = json.load(file)
-        depth_data.append(depth.to_json())
-        with open(self.file_path, mode='w') as file:
-            json.dump(depth_data, file)

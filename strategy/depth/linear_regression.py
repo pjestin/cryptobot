@@ -8,7 +8,7 @@ from model import TradeAction
 
 class DepthLinearRegressionStrategy:
 
-    MIN_RETURN = 1.001
+    MIN_RETURN = 1.0013
 
     @classmethod
     def depth_linear_regression(cls, units):
@@ -28,9 +28,7 @@ class DepthLinearRegressionStrategy:
         asks_coef, asks_intercept = cls.depth_linear_regression(depth.asks)
         intersection = (bids_intercept - asks_intercept) / (asks_coef - bids_coef)
         if not acquired and intersection > depth.asks[0].price * cls.MIN_RETURN:
-            # logging.info("Bid: {}; Ask: {}; Intersection: {}".format(depth.bids[0].price, depth.asks[0].price, intersection))
             return TradeAction('buy')
         if acquired and intersection < depth.bids[0].price / cls.MIN_RETURN:
-            # logging.info("Bid: {}; Ask: {}; Intersection: {}".format(depth.bids[0].price, depth.asks[0].price, intersection))
             return TradeAction('sell')
         return TradeAction(None)

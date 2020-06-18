@@ -13,9 +13,9 @@ from strategy.depth.linear_regression import DepthLinearRegressionStrategy
 from strategy.depth.deep_learning import DepthDeepLearningStrategy
 
 CURRENCY_PAIR = 'ETHUSDT'
-LIMIT = 100
+LIMIT = 1000
 COMMISSION = 0.001
-KLINE_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_1m_1592073960000.json'
+KLINE_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_1m_1592211780000.json'
 DEPTH_FILE_DATE = date(2020, 6, 16)
 TRAIN_FACTOR = 0.5
 
@@ -24,22 +24,20 @@ def simulate():
     log_format = '%(asctime)-15s %(message)s'
     logging.basicConfig(format=log_format, level=logging.INFO)
 
-    # depth_data = DepthDb(CURRENCY_PAIR, LIMIT, DEPTH_FILE_DATE).read()
-    depth_data = DepthDb(CURRENCY_PAIR, LIMIT, date(2020, 6, 14)).read() \
-        + DepthDb(CURRENCY_PAIR, LIMIT, date(2020, 6, 15)).read()
+    depth_data = DepthDb(CURRENCY_PAIR, LIMIT, DEPTH_FILE_DATE).read()
 
     # Deep learning
-    n = len(depth_data)
-    save = False
-    n_start = n if save else int(n * TRAIN_FACTOR)
-    klines = read_data.read_klines_from_json(file_path=KLINE_FILE_PATH)
-    strat = DepthDeepLearningStrategy()
-    depth_train = depth_data[0:n_start]
-    depth_test = depth_data[n_start:]
-    for use_case in ['buy', 'sell']:
-        strat.fit_model(klines, depth_train, use_case)
+    # n = len(depth_data)
+    # save = False
+    # n_start = n if save else int(n * TRAIN_FACTOR)
+    # klines = read_data.read_klines_from_json(file_path=KLINE_FILE_PATH)
+    # strat = DepthDeepLearningStrategy()
+    # depth_train = depth_data[0:n_start]
+    # depth_test = depth_data[n_start:]
+    # for use_case in ['buy', 'sell']:
+    #     strat.fit_model(klines, depth_train, use_case)
     
-    # depth_test = depth_data
+    depth_test = depth_data
 
     money = 0.
     transactions = 0
@@ -47,8 +45,8 @@ def simulate():
     for depth in depth_test:
         current_time = depth.time
 
-        # action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
-        action = strat.decide_action(depth, acquired)
+        action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
+        # action = strat.decide_action(depth, acquired)
 
         if action.is_buy():
             price = depth.asks[0].price

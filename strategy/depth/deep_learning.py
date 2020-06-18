@@ -10,8 +10,8 @@ from model import TradeAction
 
 class DepthDeepLearningStrategy:
 
-    LOOK_AHEAD = timedelta(minutes=5)
-    MIN_LOG_RETURN = 0.0003
+    LOOK_AHEAD = timedelta(minutes=60)
+    MIN_LOG_RETURN = 0.002
     N_EPOCHS = 3
     QUANTITY_FACTOR_POWER = 0.
 
@@ -21,9 +21,7 @@ class DepthDeepLearningStrategy:
     
     @classmethod
     def depth_features(cls, depth):
-        return [unit.price for unit in depth.bids] \
-                + [unit.quantity for unit in depth.bids] \
-                + [unit.price for unit in depth.asks] \
+        return [unit.quantity for unit in depth.bids] \
                 + [unit.quantity for unit in depth.asks]
     
     def should_take_action(self, klines, use_case, current, look_ahead):

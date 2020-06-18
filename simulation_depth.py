@@ -15,7 +15,7 @@ from strategy.depth.deep_learning import DepthDeepLearningStrategy
 CURRENCY_PAIR = 'ETHUSDT'
 LIMIT = 1000
 COMMISSION = 0.001
-KLINE_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_1m_1592211780000.json'
+KLINE_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_1m_1592250660000.json'
 DEPTH_FILE_DATE = date(2020, 6, 16)
 TRAIN_FACTOR = 0.5
 
@@ -63,8 +63,12 @@ def simulate():
             logging.info('Selling at {}; money: {}; date: {}'.format(
                 price, money, current_time.date().isoformat()))
 
-    print('Money: {}; Transactions: {}; Market: {}'.format(
-        money, transactions, depth_data[-1].bids[0].price / depth_data[0].bids[0].price - 1.))
+    data_time_span = depth_data[-1].time - depth_data[0].time
+    market = depth_data[-1].bids[0].price / depth_data[0].bids[0].price - 1.
+    monthly_gain = (money - market) * (timedelta(days=20).total_seconds() / data_time_span.total_seconds())
+    yearly_gain_factor = (monthly_gain + 1.) ** 12
+    logging.info('Money: {}; Transactions: {}; Market: {}; Time: {}; Estimated year gain: {}'.format(
+        money, transactions, market, str(data_time_span), yearly_gain_factor))
 
 
 if __name__ == '__main__':

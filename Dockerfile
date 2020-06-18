@@ -10,6 +10,7 @@ RUN python -m pip install https://www.piwheels.org/simple/scipy/scipy-1.4.1-cp37
 RUN python -m pip install https://www.piwheels.org/simple/grpcio/grpcio-1.28.1-cp37-cp37m-linux_armv7l.whl#sha256=412a486f22257d975f06992d0888a3f9cfa85f2943d9f33177b660c6b3e435e6
 RUN python -m pip install https://www.piwheels.org/simple/h5py/h5py-2.10.0-cp37-cp37m-linux_armv7l.whl#sha256=3734f3af6d58f38c84e1b965c02da9f0466356d832bb32ecfffcbe5aad886453
 RUN python -m pip install https://github.com/lhelontra/tensorflow-on-arm/releases/download/v2.1.0/tensorflow-2.1.0-cp37-none-linux_armv7l.whl
+RUN python -m pip install https://www.piwheels.org/simple/scikit-learn/scikit_learn-0.23.1-cp37-cp37m-linux_armv7l.whl
 COPY requirements.txt /home/pi
 RUN python -m pip install -r /home/pi/requirements.txt
 ENV command --version

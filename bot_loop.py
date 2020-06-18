@@ -13,6 +13,7 @@ import re
 
 from interface import read_data
 from interface.binance_io import BinanceInterface
+from strategy.depth.linear_regression import DepthLinearRegressionStrategy
 
 LOG_FILE = 'log/{}.log'
 PROFILE_FILE = 'profiles.json'
@@ -33,10 +34,11 @@ def fit(strat, currency_pair, interval, model_version):
         logging.error('No data file matched for buy model')
     if strat.sell_model is None:
         logging.error('No data file matched for sell model')
-    
 
-def probe_and_act(klines, strat, binance, state):
-    previous_transac_time = state['previous_transac_time']
+
+def probe_and_act_with_depth(depth, binance, state):
+# def probe_and_act(klines, strat, binance, state):
+    # previous_transac_time = state['previous_transac_time']
     previous_price = state['previous_price']
     acquired = state['acquired']
     nb_transactions = state['nb_transactions']
@@ -48,22 +50,24 @@ def probe_and_act(klines, strat, binance, state):
     currency_pair = state['currency_pair']
     period = state['period']
 
-    if previous_transac_time:
-        time_diff = timedelta(milliseconds=(
-            klines[-1].close_time - previous_transac_time))
-        reference_time_diff = timedelta(milliseconds=(
-            klines[1].close_time - klines[0].close_time))
-        if time_diff < TIME_DIFF_FACTOR * reference_time_diff:
-            time.sleep(period)
-            return
+    # if previous_transac_time:
+    #     time_diff = timedelta(milliseconds=(
+    #         klines[-1].close_time - previous_transac_time))
+    #     reference_time_diff = timedelta(milliseconds=(
+    #         klines[1].close_time - klines[0].close_time))
+    #     if time_diff < TIME_DIFF_FACTOR * reference_time_diff:
+    #         time.sleep(period)
+    #         return
 
-    action = strat.decide_action(klines, acquired)
+    # action = strat.decide_action(klines, acquired)
+    action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
 
     # Buy or sell
     if not acquired and action.is_buy():
         buy_quantity_factor = 1. #action.quantity_factor
         buy_quantity = float('%.3g' % (quantity * buy_quantity_factor))
-        logging.info('Buying {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
+        # logging.info('Buying {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
+        logging.info('Buying {} at {}; money: {}'.format(buy_quantity, depth.asks[0].price, money))
         if simulate:
             price = binance.last_price(currency_pair)
         else:
@@ -72,13 +76,13 @@ def probe_and_act(klines, strat, binance, state):
             price = float(order['fills'][0]['price'])
         state['previous_price'] = price
         state['nb_transactions'] += 1
-        state['previous_transac_time'] = klines[-1].close_time
+        # state['previous_transac_time'] = depth.time
         state['buy_quantity'] = buy_quantity
         state['buy_quantity_factor'] = buy_quantity_factor
         state['acquired'] = (1 - commission) * buy_quantity_factor / price
         state['money'] -= buy_quantity_factor
     elif acquired and action.is_sell():
-        logging.info('Selling {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
+        logging.info('Selling {} at {}; money: {}'.format(buy_quantity, depth.bids[0].price, money))
         if simulate:
             price = binance.last_price(currency_pair)
         else:
@@ -87,7 +91,7 @@ def probe_and_act(klines, strat, binance, state):
             price = float(order['fills'][0]['price'])
         state['previous_price'] = price
         state['nb_transactions'] += 1
-        state['previous_transac_time'] = klines[-1].close_time
+        # state['previous_transac_time'] = depth.time
         state['buy_quantity'] = None
         state['buy_quantity_factor'] = None
         state['acquired'] = None
@@ -95,12 +99,13 @@ def probe_and_act(klines, strat, binance, state):
 
 
 def run(params):
-    n_ref = params['n_ref']
+    # n_ref = params['n_ref']
     period = params['period']
     currency_pair = params['currency_pair']
-    interval = params['interval']
-    model_version = params['model_version']
+    # interval = params['interval']
+    # model_version = params['model_version']
     quantity = params['quantity']
+    depth_limit = params['depth_limit']
 
     binance = BinanceInterface()
 
@@ -110,9 +115,9 @@ def run(params):
     buy_quantity = float('%.3g' % (last_trade.quantity)) if last_trade and last_trade.is_buy else None
     buy_quantity_factor = float('%.3g' % (buy_quantity / quantity)) if buy_quantity else None
 
-    from strategy.tensorflow import TensorFlowStrategy
-    strat = TensorFlowStrategy(n_features=n_ref)
-    fit(strat, currency_pair, interval, model_version)
+    # from strategy.tensorflow import TensorFlowStrategy
+    # strat = TensorFlowStrategy(n_features=n_ref)
+    # fit(strat, currency_pair, interval, model_version)
     
     state = {
         'money': -buy_quantity_factor if buy_quantity_factor else 0.,
@@ -132,13 +137,21 @@ def run(params):
         begin_time = time.time()
 
         # Kline history
-        klines = binance.get_klines(
-            limit=n_ref, interval=interval, currency_pair=currency_pair)
+        # klines = binance.get_klines(
+        #     limit=n_ref, interval=interval, currency_pair=currency_pair)
 
-        if klines:
+        # if klines:
+        #     logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
+        #             .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price']))
+        #     probe_and_act(klines, strat, binance, state)
+        
+        # Depth
+        depth = binance.get_current_depth(currency_pair, depth_limit)
+
+        if depth:
             logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
-                    .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price']))
-            probe_and_act(klines, strat, binance, state)
+                    .format(i, state['money'], state['nb_transactions'], depth.bids[0].price / state['previous_price']))
+            probe_and_act_with_depth(depth, binance, state)
 
         # Sleep if duration was shorter than period
         duration = time.time() - begin_time
@@ -165,12 +178,7 @@ def main():
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
-    log_file = LOG_FILE.format(time.time())
-    handlers = [
-        logging.FileHandler(log_file),
-        logging.StreamHandler(sys.stdout)
-    ]
-    logging.basicConfig(format=log_format, level=logging.DEBUG, handlers=handlers)
+    logging.basicConfig(format=log_format, level=logging.DEBUG)
 
     params = {
         "n_ref": N_REF,

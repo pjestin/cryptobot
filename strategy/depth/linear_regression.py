@@ -27,6 +27,8 @@ class DepthLinearRegressionStrategy:
         bids_coef, bids_intercept = cls.depth_linear_regression(depth.bids)
         asks_coef, asks_intercept = cls.depth_linear_regression(depth.asks)
         intersection = (bids_intercept - asks_intercept) / (asks_coef - bids_coef)
+        logging.debug('Bid price: {}; ask price: {}; intersection: {}'.format(
+            depth.bids[0].price, depth.asks[0].price, intersection))
         if not acquired and intersection > depth.asks[0].price * cls.MIN_RETURN:
             return TradeAction('buy')
         if acquired and intersection < depth.bids[0].price / cls.MIN_RETURN:

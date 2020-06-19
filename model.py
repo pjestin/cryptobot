@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import numpy as np
+
 
 class TradeAction:
     BUY_ACTION = 'buy'
@@ -98,3 +100,15 @@ class Depth:
             'bids': [unit.to_json() for unit in self.bids],
             'asks': [unit.to_json() for unit in self.asks]
         }
+
+    def bid_prices(self):
+        return np.array([unit.price for unit in self.bids])
+
+    def bid_quantities(self):
+        return np.array([unit.quantity for unit in self.bids])
+
+    def ask_prices(self):
+        return np.array([unit.price for unit in self.asks])
+
+    def ask_quantities(self):
+        return np.array([unit.quantity for unit in self.asks])

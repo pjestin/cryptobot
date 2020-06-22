@@ -76,6 +76,12 @@ class DepthDeepLearningStrategy:
         elif use_case == 'sell':
             self.sell_model = model
 
+    def evaluate_models(self, klines, depth_data):
+        X_buy, y_buy = self.gather_data(klines, depth_data, 'buy')
+        X_sell, y_sell = self.gather_data(klines, depth_data, 'buy')
+        self.buy_model.evaluate(X_buy, y_buy, verbose=2)
+        self.sell_model.evaluate(X_sell, y_sell, verbose=2)
+
     def decide_action(self, depth, acquired):
         depth_features = np.array(self.depth_features(depth)).reshape(1, -1)
         buy_prediction = self.buy_model.predict_on_batch(depth_features)[0][0]

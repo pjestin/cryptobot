@@ -20,11 +20,6 @@ class DepthLinearRegressionStrategy:
 
     @classmethod
     def decide_action(cls, depth, acquired):
-        # if not acquired and sum(unit.quantity for unit in depth.bids) > sum(unit.quantity for unit in depth.asks) * cls.MIN_RETURN:
-        #     return TradeAction('buy')
-        # if acquired and sum(unit.quantity for unit in depth.bids) < sum(unit.quantity for unit in depth.asks) / cls.MIN_RETURN:
-        #     return TradeAction('sell')
-        # return TradeAction(None)
         bids_coef, bids_intercept = cls.depth_linear_regression(depth.bids)
         asks_coef, asks_intercept = cls.depth_linear_regression(depth.asks)
         intersection = (bids_intercept - asks_intercept) / (asks_coef - bids_coef)

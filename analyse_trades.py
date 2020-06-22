@@ -19,33 +19,41 @@ def analyse_trades(currency_pairs, start_date=None):
 
     for index, currency_pair in enumerate(currency_pairs):
         trades = binance.my_trade_history(currency_pair)
-        money = 0.0
         acquired_price = None
         previous_price = None
-        t = [start_date]
-        x = [0.0]
+        first_price = None
+        t_money = [start_date]
+        t_prices = [start_date]
+        money = [0.0]
+        prices = [0.0]
 
         for trade in trades:
             if start_date and datetime.utcfromtimestamp(trade.time) < start_date:
                 continue
+            if not first_price:
+                first_price = trade.price
             if trade.is_buy:
                 if acquired_price:
                     logging.error('Two buys in a row: {}, then {}'.format(previous_price, trade.price))
                     continue
                 acquired_price = trade.price
+                t_prices.append(datetime.fromtimestamp(trade.time))
+                prices.append(trade.price / first_price - 1.)
             else:
                 if not acquired_price:
                     logging.error('Two sells in a row, {}, then {}'.format(previous_price, trade.price))
                     continue
-                money += trade.price / acquired_price * math.pow(1. - COMMISSION, 2) - 1.
+                t_money.append(datetime.fromtimestamp(trade.time))
+                t_prices.append(datetime.fromtimestamp(trade.time))
+                money.append(money[-1] + trade.price / acquired_price * math.pow(1. - COMMISSION, 2) - 1.)
+                prices.append(trade.price / first_price - 1.)
                 acquired_price = None
-                t.append(datetime.fromtimestamp(trade.time))
-                x.append(money)
             previous_price = trade.price
     
         plt.subplot(len(CURRENCY_PAIRS), 1, index + 1)
         plt.title(currency_pair)
-        plt.plot(t, x)
+        plt.plot(t_money, money)
+        plt.plot(t_prices, prices)
     
     plt.show()
 

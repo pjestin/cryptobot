@@ -1,7 +1,6 @@
 import logging
 import math
 
-import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
@@ -32,20 +31,7 @@ class DepthLinearRegressionStrategy:
         logging.debug('Bid price: {}; ask price: {}; intersection: {}'.format(
             depth.bids[0].price, depth.asks[0].price, intersection))
         if not acquired and math.log(intersection / depth.asks[0].price) > cls.MIN_LOG_RETURN:
-            # cls.plot(depth, bids_coef, bids_intercept, asks_coef, asks_intercept)
             return TradeAction('buy')
         if acquired and math.log(intersection / depth.bids[0].price) < -cls.MIN_LOG_RETURN:
-            # cls.plot(depth, bids_coef, bids_intercept, asks_coef, asks_intercept)
             return TradeAction('sell')
         return TradeAction(None)
-    
-    @classmethod
-    def plot(cls, depth, bids_coef, bids_intercept, asks_coef, asks_intercept):
-        plt.plot(depth.bid_prices(), np.cumsum(depth.bid_quantities()))
-        plt.plot(depth.ask_prices(), np.cumsum(depth.ask_quantities()))
-
-        x = np.concatenate((depth.bid_prices(), depth.ask_prices()))
-        plt.plot(x, bids_coef * x + bids_intercept)
-        plt.plot(x, asks_coef * x + asks_intercept)
-
-        plt.show()

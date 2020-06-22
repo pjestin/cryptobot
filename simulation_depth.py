@@ -73,7 +73,7 @@ def simulate():
 
     data_time_span = depth_data[-1].time - depth_data[0].time
     market = depth_data[-1].bids[0].price / depth_data[0].bids[0].price - 1.
-    monthly_gain = (money - market) * (timedelta(days=30).total_seconds() / data_time_span.total_seconds())
+    monthly_gain = money * (timedelta(days=30).total_seconds() / data_time_span.total_seconds())
     yearly_gain_factor = (monthly_gain + 1.) ** 12
     logging.info('Money: {}; Transactions: {}; Market: {}; Time: {}; Estimated year gain: {}'.format(
         money, transactions, market, str(data_time_span), yearly_gain_factor))

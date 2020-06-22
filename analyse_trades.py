@@ -4,7 +4,7 @@
 import logging
 import argparse
 import math
-from datetime import datetime
+from datetime import datetime, date
 
 import matplotlib.pyplot as plt
 
@@ -15,7 +15,6 @@ CURRENCY_PAIRS = ['BNBUSDT', 'BTCUSDT', 'ETHUSDT']
 
 
 def analyse_trades(currency_pairs, start_date=None):
-    start_date_object = datetime.utcfromtimestamp(float(start_date))
     binance = BinanceInterface()
 
     for index, currency_pair in enumerate(currency_pairs):
@@ -27,7 +26,7 @@ def analyse_trades(currency_pairs, start_date=None):
         x = [0.0]
 
         for trade in trades:
-            if start_date and datetime.utcfromtimestamp(trade.time) < start_date_object:
+            if start_date and datetime.utcfromtimestamp(trade.time) < start_date:
                 continue
             if trade.is_buy:
                 if acquired_price:
@@ -40,7 +39,7 @@ def analyse_trades(currency_pairs, start_date=None):
                     continue
                 money += trade.price / acquired_price * math.pow(1. - COMMISSION, 2) - 1.
                 acquired_price = None
-                t.append(trade.time)
+                t.append(datetime.fromtimestamp(trade.time))
                 x.append(money)
             previous_price = trade.price
     
@@ -63,7 +62,7 @@ def main():
     
     currency_pairs = [args.currency_pair] if args.currency_pair else CURRENCY_PAIRS
 
-    analyse_trades(currency_pairs, args.date)
+    analyse_trades(currency_pairs, datetime.combine(date.fromisoformat(args.date), datetime.min.time()))
 
 
 if __name__ == '__main__':

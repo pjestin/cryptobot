@@ -24,10 +24,11 @@ def simulate():
     log_format = '%(asctime)-15s %(message)s'
     logging.basicConfig(format=log_format, level=logging.INFO)
 
-    depth_data = DepthDb(CURRENCY_PAIR, LIMIT, DEPTH_FILE_DATE).read()
+    depth_db = DepthDb(CURRENCY_PAIR, LIMIT, DEPTH_FILE_DATE)
+    depth_data = depth_db.read()
+    n = depth_db.data_count()
 
     # Deep learning
-    # n = len(depth_data)
     # save = False
     # n_start = n if save else int(n * TRAIN_FACTOR)
     # klines = read_data.read_klines_from_json(file_path=KLINE_FILE_PATH)

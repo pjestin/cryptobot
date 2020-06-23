@@ -17,6 +17,13 @@ class DepthDb:
     def read(self):
         with open(self.file_path, mode='r') as file:
             return (Depth.from_db_json(json.loads(line)) for line in file.readlines())
+    
+    def data_count(self):
+        i = 0
+        with open(self.file_path, mode='r') as file:
+            for _ in file.readlines():
+                i += 1
+        return i
 
     def extend(self, depth):
         logging.debug('Adding depth data to file {}'.format(self.file_path))

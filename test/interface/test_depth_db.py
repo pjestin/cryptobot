@@ -33,13 +33,13 @@ class DepthDbTest(unittest.TestCase):
     def test_read(self):
         self.depth_db.extend(self.depth)
         depth_data = self.depth_db.read()
-        self.assertEqual(1, len(depth_data))
-        self.assertEqual(self.depth.time, depth_data[0].time)
-        self.assertEqual(self.depth.bids, depth_data[0].bids)
-        self.assertEqual(self.depth.asks, depth_data[0].asks)
-    
+        self.assertEqual(1, self.depth_db.data_count())
+        depth = next(depth_data)
+        self.assertEqual(self.depth.time, depth.time)
+        self.assertEqual(self.depth.bids, depth.bids)
+        self.assertEqual(self.depth.asks, depth.asks)
+
     def test_multiple_extends(self):
         self.depth_db.extend(self.depth)
         self.depth_db.extend(self.depth)
-        depth_data = self.depth_db.read()
-        self.assertEqual(2, len(depth_data))
+        self.assertEqual(2, self.depth_db.data_count())

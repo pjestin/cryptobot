@@ -65,7 +65,7 @@ def simulate():
             logging.info('Buying at {}'.format(price))
         elif acquired and action.is_sell():
             price = depth.bids[0].price
-            money += ((1 - COMMISSION) * price - previous_price) * acquired
+            money += (1. - COMMISSION) * price * acquired - 1.
             acquired = None
             previous_price = price
             transactions += 1
@@ -74,7 +74,7 @@ def simulate():
 
     if acquired:
         price = depth.bids[0].price
-        money += ((1 - COMMISSION) * price - previous_price) * acquired
+        money += (1. - COMMISSION) * price * acquired - 1.
         acquired = None
         transactions += 1
         logging.info('Selling at {}; money: {}; date: {}'.format(

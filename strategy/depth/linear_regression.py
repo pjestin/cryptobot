@@ -9,7 +9,7 @@ from model import TradeAction
 
 class DepthLinearRegressionStrategy:
 
-    MIN_LOG_RETURN = .0013
+    MIN_LOG_RETURN = .002
 
     @classmethod
     def depth_linear_regression(cls, units):

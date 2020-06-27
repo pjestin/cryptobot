@@ -13,7 +13,7 @@ from strategy.depth.linear_regression import DepthLinearRegressionStrategy
 from strategy.depth.deep_learning import DepthDeepLearningStrategy
 
 CURRENCY_PAIR = 'ETHUSDT'
-LIMIT = 1000
+LIMIT = 100
 COMMISSION = 0.001
 KLINE_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_1m_1592265600000.json'
 DEPTH_FILE_DATE = date(2020, 6, 16)
@@ -25,20 +25,21 @@ def simulate():
     logging.basicConfig(format=log_format, level=logging.INFO)
 
     depth_db = DepthDb(CURRENCY_PAIR, LIMIT, DEPTH_FILE_DATE)
-    depth_data = depth_db.read()
-    n = depth_db.data_count()
+    depth_data = list(depth_db.read())
+    # n = depth_db.data_count()
 
     # Deep learning
-    # save = False
-    # n_start = n if save else int(n * TRAIN_FACTOR)
-    # klines = read_data.read_klines_from_json(file_path=KLINE_FILE_PATH)
-    # strat = DepthDeepLearningStrategy()
-    # depth_train = depth_data[0:n_start]
-    # depth_test = depth_data[n_start:]
-    # for use_case in ['buy', 'sell']:
-    #     strat.fit_model(klines, depth_train, use_case)
+    save = False
+    n = len(depth_data)
+    n_start = n if save else int(n * TRAIN_FACTOR)
+    klines = read_data.read_klines_from_json(file_path=KLINE_FILE_PATH)
+    strat = DepthDeepLearningStrategy()
+    depth_train = depth_data[0:n_start]
+    depth_test = depth_data[n_start:]
+    for use_case in ['buy', 'sell']:
+        strat.fit_model(klines, depth_train, use_case)
     
-    depth_test = depth_data
+    # depth_test = depth_data
 
     money = 0.
     transactions = 0
@@ -54,8 +55,8 @@ def simulate():
             start_time = depth.time
         end_time = depth.time
 
-        action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
-        # action = strat.decide_action(depth, acquired)
+        # action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
+        action = strat.decide_action(depth, acquired)
 
         if action.is_buy():
             price = depth.asks[0].price

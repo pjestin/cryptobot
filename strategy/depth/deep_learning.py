@@ -11,7 +11,7 @@ from model import TradeAction
 class DepthDeepLearningStrategy:
 
     LOOK_AHEAD = timedelta(minutes=60)
-    MIN_LOG_RETURN = 0.002
+    MIN_LOG_RETURN = 0.0015
     N_EPOCHS = 3
     QUANTITY_FACTOR_POWER = 0.
 

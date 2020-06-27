@@ -36,8 +36,8 @@ def fit(strat, currency_pair, interval, model_version):
         logging.error('No data file matched for sell model')
 
 
-def probe_and_act_with_depth(depth, binance, state):
-# def probe_and_act(klines, strat, binance, state):
+# def probe_and_act_with_depth(depth, binance, state):
+def probe_and_act(klines, strat, binance, state):
     # previous_transac_time = state['previous_transac_time']
     previous_price = state['previous_price']
     acquired = state['acquired']
@@ -59,15 +59,15 @@ def probe_and_act_with_depth(depth, binance, state):
     #         time.sleep(period)
     #         return
 
-    # action = strat.decide_action(klines, acquired)
-    action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
+    action = strat.decide_action(klines, acquired)
+    # action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
 
     # Buy or sell
     if not acquired and action.is_buy():
         buy_quantity_factor = 1. #action.quantity_factor
         buy_quantity = float('%.3g' % (quantity * buy_quantity_factor))
-        # logging.info('Buying {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
-        logging.info('Buying {} at {}; money: {}'.format(buy_quantity, depth.asks[0].price, money))
+        logging.info('Buying {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
+        # logging.info('Buying {} at {}; money: {}'.format(buy_quantity, depth.asks[0].price, money))
         if simulate:
             price = binance.last_price(currency_pair)
         else:
@@ -82,7 +82,8 @@ def probe_and_act_with_depth(depth, binance, state):
         state['acquired'] = (1 - commission) * buy_quantity_factor / price
         state['money'] -= buy_quantity_factor
     elif acquired and action.is_sell():
-        logging.info('Selling {} at {}; money: {}'.format(buy_quantity, depth.bids[0].price, money))
+        logging.info('Selling {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
+        # logging.info('Selling {} at {}; money: {}'.format(buy_quantity, depth.bids[0].price, money))
         if simulate:
             price = binance.last_price(currency_pair)
         else:
@@ -99,13 +100,13 @@ def probe_and_act_with_depth(depth, binance, state):
 
 
 def run(params):
-    # n_ref = params['n_ref']
+    n_ref = params['n_ref']
     period = params['period']
     currency_pair = params['currency_pair']
-    # interval = params['interval']
-    # model_version = params['model_version']
+    interval = params['interval']
+    model_version = params['model_version']
     quantity = params['quantity']
-    depth_limit = params['depth_limit']
+    # depth_limit = params['depth_limit']
 
     binance = BinanceInterface()
 
@@ -115,9 +116,9 @@ def run(params):
     buy_quantity = float('%.3g' % (last_trade.quantity)) if last_trade and last_trade.is_buy else None
     buy_quantity_factor = float('%.3g' % (buy_quantity / quantity)) if buy_quantity else None
 
-    # from strategy.tensorflow import TensorFlowStrategy
-    # strat = TensorFlowStrategy(n_features=n_ref)
-    # fit(strat, currency_pair, interval, model_version)
+    from strategy.klines.deep_learning import KlinesDeepLearningStrategy
+    strat = KlinesDeepLearningStrategy(n_features=n_ref)
+    fit(strat, currency_pair, interval, model_version)
     
     state = {
         'money': -buy_quantity_factor if buy_quantity_factor else 0.,
@@ -137,21 +138,21 @@ def run(params):
         begin_time = time.time()
 
         # Kline history
-        # klines = binance.get_klines(
-        #     limit=n_ref, interval=interval, currency_pair=currency_pair)
+        klines = binance.get_klines(
+            limit=n_ref, interval=interval, currency_pair=currency_pair)
 
-        # if klines:
-        #     logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
-        #             .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price']))
-        #     probe_and_act(klines, strat, binance, state)
+        if klines:
+            logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
+                    .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price']))
+            probe_and_act(klines, strat, binance, state)
         
         # Depth
-        depth = binance.get_current_depth(currency_pair, depth_limit)
+        # depth = binance.get_current_depth(currency_pair, depth_limit)
 
-        if depth:
-            logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
-                    .format(i, state['money'], state['nb_transactions'], depth.bids[0].price / state['previous_price']))
-            probe_and_act_with_depth(depth, binance, state)
+        # if depth:
+        #     logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
+        #             .format(i, state['money'], state['nb_transactions'], depth.bids[0].price / state['previous_price']))
+        #     probe_and_act_with_depth(depth, binance, state)
 
         # Sleep if duration was shorter than period
         duration = time.time() - begin_time

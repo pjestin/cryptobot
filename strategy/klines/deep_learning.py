@@ -9,7 +9,7 @@ from model import TradeAction
 from strategy.indicators import Indicators
 
 
-class TensorFlowStrategy:
+class KlinesDeepLearningStrategy:
 
     LOOK_AHEAD = 40
     MIN_LOG_RETURN = 0.002

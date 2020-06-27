@@ -20,14 +20,14 @@ class Indicators:
             return [1.]
         if nb_period not in cls.exp_weights_cache:
             A = math.log(1 - 2 / (nb_period + 1))
-            exp_weights = [math.exp(k * A) for k in reversed(range(0, nb_period))]
+            exp_weights = [math.exp(k * A) for k in range(0, nb_period)]
             cls.exp_weights_cache[nb_period] = [exp_weight / sum(exp_weights) for exp_weight in exp_weights]
         return cls.exp_weights_cache[nb_period]
 
     @classmethod
     def exp_moving_average(cls, x, K, nb_period):
         normalized_exp_weights = cls.get_exp_weights(nb_period)
-        return np.dot(normalized_exp_weights, x[K - nb_period + 1:K + 1])
+        return np.dot(normalized_exp_weights, x[K:K - nb_period:-1])
 
     @classmethod
     def moving_average_conv_div(cls, x, K):

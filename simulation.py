@@ -15,7 +15,7 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/klines/binance_klines_BTCUSDT_15m_1502942400000.json'
+TEST_FILE_PATH = 'data/klines/binance_klines_ETHBTC_15m_1500004800000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = .5
 N_FEATURES = 1000
@@ -42,7 +42,7 @@ def run_simulation(klines, n_features, commission, save):
         return
     else:
         klines_test = klines[n_start:] 
-        strat.evaluate_models(klines_test)
+        # strat.evaluate_models(klines_test)
 
     for k in range(n_start + n_features, n):
         klines_ref = klines[k-n_features:k]
@@ -57,7 +57,7 @@ def run_simulation(klines, n_features, commission, save):
             previous_price = price
             logging.info('Buying at {}'.format(price))
         elif acquired and action.is_sell():
-            money.append(money[-1] + ((1 - commission) * price - previous_price) * acquired)
+            money.append(money[-1] + (1. - commission) * price * acquired - 1.)
             acquired = None
             previous_price = price
             logging.info('Selling at {}; money: {}; date: {}'.format(

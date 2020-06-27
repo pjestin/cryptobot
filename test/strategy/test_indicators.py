@@ -9,8 +9,8 @@ class IndicatorsTest(unittest.TestCase):
 
     def test_exp_weights(self):
         self.assertEqual([1.], Indicators.get_exp_weights(nb_period=1))
-        self.assertEqual([0.25, 0.7499999999999999], Indicators.get_exp_weights(nb_period=2))
-        self.assertEqual([0.14285714285714285, 0.2857142857142857, 0.5714285714285714], Indicators.get_exp_weights(nb_period=3))
+        self.assertEqual([0.7499999999999999, 0.25], Indicators.get_exp_weights(nb_period=2))
+        self.assertEqual([0.5714285714285714, 0.2857142857142857, 0.14285714285714285], Indicators.get_exp_weights(nb_period=3))
 
     def test_exp_moving_average(self):
         self.assertEqual(.4, Indicators.exp_moving_average(self.x, K=8, nb_period=1))

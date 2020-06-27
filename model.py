@@ -60,21 +60,6 @@ class Trade:
 
 class Depth:
 
-    class Unit:
-        def __init__(self, price, quantity):
-            self.price = price
-            self.quantity = quantity
-        
-        def to_json(self):
-            return [self.price, self.quantity]
-        
-        @classmethod
-        def from_json(cls, unit_data):
-            return cls(unit_data[0], unit_data[1])
-        
-        def __eq__(self, other):
-            return self.price == other.price and self.quantity == other.quantity
-
     def __init__(self, depth_time, depth_bids, depth_asks):
         self.time = depth_time
         self.bids = depth_bids
@@ -83,32 +68,32 @@ class Depth:
     @classmethod
     def from_binance_json(cls, binance_json_data):
         depth_time = datetime.fromisoformat(binance_json_data['time'])
-        depth_bids = [cls.Unit(float(price), float(quantity)) for price, quantity in binance_json_data['bids']]
-        depth_asks = [cls.Unit(float(price), float(quantity)) for price, quantity in binance_json_data['asks']]
+        depth_bids = [(float(price), float(quantity)) for price, quantity in binance_json_data['bids']]
+        depth_asks = [(float(price), float(quantity)) for price, quantity in binance_json_data['asks']]
         return cls(depth_time, depth_bids, depth_asks)
 
     @classmethod
     def from_db_json(cls, db_json_data):
         depth_time = datetime.fromisoformat(db_json_data['time'])
-        depth_bids = [cls.Unit.from_json(unit) for unit in db_json_data['bids']]
-        depth_asks = [cls.Unit.from_json(unit) for unit in db_json_data['asks']]
+        depth_bids = db_json_data['bids']
+        depth_asks = db_json_data['asks']
         return cls(depth_time, depth_bids, depth_asks)
 
     def to_json(self):
         return {
             'time': self.time.isoformat(),
-            'bids': [unit.to_json() for unit in self.bids],
-            'asks': [unit.to_json() for unit in self.asks]
+            'bids': self.bids,
+            'asks': self.asks
         }
 
     def bid_prices(self):
-        return np.array([unit.price for unit in self.bids])
+        return np.array([unit[0] for unit in self.bids])
 
     def bid_quantities(self):
-        return np.array([unit.quantity for unit in self.bids])
+        return np.array([unit[1] for unit in self.bids])
 
     def ask_prices(self):
-        return np.array([unit.price for unit in self.asks])
+        return np.array([unit[0] for unit in self.asks])
 
     def ask_quantities(self):
-        return np.array([unit.quantity for unit in self.asks])
+        return np.array([unit[1] for unit in self.asks])

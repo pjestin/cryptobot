@@ -7,10 +7,13 @@ import math
 from datetime import datetime, timedelta, date
 import logging
 
+import matplotlib.pyplot as plt
+
 from interface import read_data
 from interface.depth_db import DepthDb
 from strategy.depth.linear_regression import DepthLinearRegressionStrategy
 from strategy.depth.deep_learning import DepthDeepLearningStrategy
+from strategy.depth.order_book_imbalance import DepthOrderBookImbalanceStrategy
 
 CURRENCY_PAIR = 'ETHUSDT'
 LIMIT = 1000
@@ -41,11 +44,14 @@ def simulate():
     
     depth_test = depth_data
 
-    money = 0.
+    money = [0.]
     transactions = 0
     acquired = None
     start_price, end_price = None, None
     start_time, end_time = None, None
+    sell_times = []
+    times = []
+    prices = []
     for depth in depth_test:
         current_time = depth.time
         if not start_price:
@@ -54,8 +60,14 @@ def simulate():
         if not start_time:
             start_time = depth.time
         end_time = depth.time
+        if not sell_times:
+            sell_times.append(depth.time)
 
-        action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
+        times.append(current_time)
+        prices.append(end_price / start_price - 1.)
+
+        # action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
+        action = DepthOrderBookImbalanceStrategy.decide_action(depth, acquired)
         # action = strat.decide_action(depth, acquired)
 
         if action.is_buy():
@@ -65,26 +77,32 @@ def simulate():
             logging.info('Buying at {}'.format(price))
         elif acquired and action.is_sell():
             price = depth.bids[0][0]
-            money += (1. - COMMISSION) * price * acquired - 1.
+            money.append(money[-1] + (1. - COMMISSION) * price * acquired - 1.)
             acquired = None
             transactions += 1
             logging.info('Selling at {}; money: {}; date: {}'.format(
-                price, money, current_time.date().isoformat()))
+                price, money[-1], current_time.date().isoformat()))
+            sell_times.append(current_time)
 
     if acquired:
         price = depth.bids[0][0]
-        money += (1. - COMMISSION) * price * acquired - 1.
+        money.append(money[-1] + (1. - COMMISSION) * price * acquired - 1.)
         acquired = None
         transactions += 1
         logging.info('Selling at {}; money: {}; date: {}'.format(
-            price, money, current_time.date().isoformat()))
+            price, money[-1], current_time.date().isoformat()))
+        sell_times.append(current_time)
 
     data_time_span = end_time - start_time
     market = end_price / start_price - 1.
-    monthly_gain = money * (timedelta(days=30).total_seconds() / data_time_span.total_seconds())
+    monthly_gain = money[-1] * (timedelta(days=30).total_seconds() / data_time_span.total_seconds())
     yearly_gain_factor = (monthly_gain + 1.) ** 12
     logging.info('Money: {}; Transactions: {}; Market: {}; Time: {}; Estimated year gain: {}'.format(
-        money, transactions, market, str(data_time_span), yearly_gain_factor))
+        money[-1], transactions, market, str(data_time_span), yearly_gain_factor))
+    
+    plt.plot(sell_times, money)
+    plt.plot(times, prices)
+    plt.show()
 
 
 if __name__ == '__main__':

@@ -62,7 +62,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Analyse history of Binance trades')
     parser.add_argument('-c', '--currency-pair', help='Curreny pair for which to resturn data (e.g. BTCUSDT)', dest='currency_pair')
-    parser.add_argument('-d', '--date', help='Start date from which to retrieve trade history')
+    parser.add_argument('-d', '--date', help='Start date in ISO format from which to retrieve trade history.')
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'

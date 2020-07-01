@@ -27,8 +27,10 @@ class DepthOrderBookImbalanceStrategy:
                 break
             ask_quantity += quantity
 
-        if not acquired and math.log(bid_quantity / ask_quantity) > cls.MIN_QUANTITY_RATIO:
+        quantity_log_ratio = math.log(bid_quantity / ask_quantity)
+        logging.debug('Bid vs ask quantity ratio: {}'.format(quantity_log_ratio))
+        if not acquired and quantity_log_ratio > cls.MIN_QUANTITY_RATIO:
             return TradeAction('buy')
-        if acquired and math.log(bid_quantity / ask_quantity) < -cls.MIN_QUANTITY_RATIO:
+        if acquired and quantity_log_ratio < -cls.MIN_QUANTITY_RATIO:
             return TradeAction('sell')
         return TradeAction(None)

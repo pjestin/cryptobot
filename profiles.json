@@ -4,20 +4,23 @@
         "quantity": 1.0,
         "period": 60,
         "interval": "15m",
-        "model_version": "2020-06-27"
+        "model_version": "2020-06-27",
+        "depth_limit": 1000
     },
     "btcusdt": {
         "currency_pair": "BTCUSDT",
         "quantity": 0.0015,
         "period": 60,
         "interval": "15m",
-        "model_version": "2020-06-27"
+        "model_version": "2020-06-27",
+        "depth_limit": 1000
     },
     "ethusdt": {
         "currency_pair": "ETHUSDT",
         "quantity": 0.06,
         "period": 60,
         "interval": "15m",
-        "model_version": "2020-06-27"
+        "model_version": "2020-06-27",
+        "depth_limit": 1000
     }
 }

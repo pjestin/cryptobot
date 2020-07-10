@@ -18,7 +18,7 @@ class DepthDb:
         with sqlite3.connect(self.file_path,
                 detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES) as conn:
             cur = conn.cursor()
-            for depth_row in cur.execute("SELECT time, bids, asks FROM depths"):
+            for depth_row in cur.execute("SELECT time, bids, asks FROM depths ORDER BY time ASC"):
                 yield Depth(depth_row[0],
                     json.loads(depth_row[1]), json.loads(depth_row[2]))
     

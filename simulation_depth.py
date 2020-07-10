@@ -19,7 +19,6 @@ CURRENCY_PAIR = 'ETHUSDT'
 LIMIT = 1000
 COMMISSION = 0.001
 KLINE_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_1m_1592265600000.json'
-DEPTH_FILE_DATE = date(2020, 6, 16)
 TRAIN_FACTOR = 0.5
 
 
@@ -27,7 +26,7 @@ def simulate():
     log_format = '%(asctime)-15s %(message)s'
     logging.basicConfig(format=log_format, level=logging.INFO)
 
-    depth_db = DepthDb(CURRENCY_PAIR, LIMIT, DEPTH_FILE_DATE)
+    depth_db = DepthDb(CURRENCY_PAIR, LIMIT)
     depth_data = depth_db.read()
     # n = depth_db.data_count()
 

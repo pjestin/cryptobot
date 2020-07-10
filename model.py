@@ -72,19 +72,19 @@ class Depth:
         depth_asks = [(float(price), float(quantity)) for price, quantity in binance_json_data['asks']]
         return cls(depth_time, depth_bids, depth_asks)
 
-    @classmethod
-    def from_db_json(cls, db_json_data):
-        depth_time = datetime.fromisoformat(db_json_data['time'])
-        depth_bids = db_json_data['bids']
-        depth_asks = db_json_data['asks']
-        return cls(depth_time, depth_bids, depth_asks)
+    # @classmethod
+    # def from_db_json(cls, db_json_data):
+    #     depth_time = datetime.fromisoformat(db_json_data['time'])
+    #     depth_bids = db_json_data['bids']
+    #     depth_asks = db_json_data['asks']
+    #     return cls(depth_time, depth_bids, depth_asks)
 
-    def to_json(self):
-        return {
-            'time': self.time.isoformat(),
-            'bids': self.bids,
-            'asks': self.asks
-        }
+    # def to_json(self):
+    #     return {
+    #         'time': self.time.isoformat(),
+    #         'bids': self.bids,
+    #         'asks': self.asks
+    #     }
 
     def bid_prices(self):
         return np.array([unit[0] for unit in self.bids])

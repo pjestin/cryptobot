@@ -66,8 +66,8 @@ def simulate():
         times.append(current_time)
         prices.append(end_price / start_price - 1.)
 
-        # action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
-        action = DepthOrderBookImbalanceStrategy.decide_action(depth, acquired)
+        action = DepthLinearRegressionStrategy.decide_action(depth, acquired)
+        # action = DepthOrderBookImbalanceStrategy.decide_action(depth, acquired)
         # action = strat.decide_action(depth, acquired)
 
         if action.is_buy():

@@ -25,7 +25,7 @@ def dump_depth(binance_interface, depth_db):
 
 def run(currency_pair):
     binance_interface = BinanceInterface()
-    depth_dbs = [DepthDb(currency_pair, limit, date.today()) for limit in ORDER_BOOK_LIMITS]
+    depth_dbs = [DepthDb(currency_pair, limit) for limit in ORDER_BOOK_LIMITS]
 
     while True:
         begin_time = time.time()

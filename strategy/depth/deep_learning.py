@@ -78,7 +78,7 @@ class DepthDeepLearningStrategy:
 
     def evaluate_models(self, klines, depth_data):
         X_buy, y_buy = self.gather_data(klines, depth_data, 'buy')
-        X_sell, y_sell = self.gather_data(klines, depth_data, 'buy')
+        X_sell, y_sell = self.gather_data(klines, depth_data, 'sell')
         self.buy_model.evaluate(X_buy, y_buy, verbose=2)
         self.sell_model.evaluate(X_sell, y_sell, verbose=2)
 

@@ -14,8 +14,8 @@ class DepthLinearRegressionStrategy:
 
     @classmethod
     def depth_linear_regression(cls, units):
-        cumulative_quantity = np.cumsum([unit.quantity for unit in units])
-        prices = np.array([unit.price for unit in units]).reshape(-1, 1)
+        cumulative_quantity = np.cumsum([unit[1] for unit in units])
+        prices = np.array([unit[0] for unit in units]).reshape(-1, 1)
         regressor = LinearRegression().fit(prices, cumulative_quantity)
         return [regressor.coef_[0], regressor.intercept_]
 
@@ -25,9 +25,9 @@ class DepthLinearRegressionStrategy:
         asks_coef, asks_intercept = cls.depth_linear_regression(depth.asks)
         intersection = (bids_intercept - asks_intercept) / (asks_coef - bids_coef)
         logging.debug('Bid price: {}; ask price: {}; intersection: {}'.format(
-            depth.bids[0].price, depth.asks[0].price, intersection))
-        if not acquired and math.log(intersection / depth.asks[0].price) > cls.MIN_LOG_RETURN:
+            depth.bids[0][0], depth.asks[0][0], intersection))
+        if not acquired and math.log(intersection / depth.asks[0][0]) > cls.MIN_LOG_RETURN:
             return TradeAction('buy')
-        if acquired and math.log(intersection / depth.bids[0].price) < -cls.MIN_LOG_RETURN:
+        if acquired and math.log(intersection / depth.bids[0][0]) < -cls.MIN_LOG_RETURN:
             return TradeAction('sell')
         return TradeAction(None)

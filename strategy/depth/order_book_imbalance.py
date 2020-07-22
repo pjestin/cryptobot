@@ -8,8 +8,8 @@ from model import TradeAction
 
 class DepthOrderBookImbalanceStrategy:
 
-    MAX_PRICE_SPREAD = 0.02
-    MIN_QUANTITY_RATIO = 0.3
+    MAX_PRICE_SPREAD = 0.1
+    MIN_QUANTITY_RATIO = 0.1
 
     @classmethod
     def decide_action(cls, depth, acquired):

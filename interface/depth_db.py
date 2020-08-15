@@ -12,7 +12,7 @@ class DepthDb:
     def __init__(self, currency_pair, limit):
         self.currency_pair = currency_pair
         self.limit = limit
-        self.file_path = 'data/depth/binance_depth_{}_{}.db.bak'.format(currency_pair.upper(), limit)
+        self.file_path = 'data/depth/binance_depth_{}_{}.db'.format(currency_pair.upper(), limit)
 
     def read(self):
         with sqlite3.connect(self.file_path,

@@ -15,7 +15,7 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/klines/binance_klines_ETHBTC_15m_1500004800000.json'
+TEST_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_15m_1502942400000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = .5
 N_FEATURES = 1000

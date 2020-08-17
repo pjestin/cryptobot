@@ -21,8 +21,8 @@ class DepthDeepLearningStrategy:
     
     @classmethod
     def depth_features(cls, depth):
-        return [unit.quantity for unit in depth.bids] \
-                + [unit.quantity for unit in depth.asks]
+        return [unit[1] for unit in depth.bids] \
+                + [unit[1] for unit in depth.asks]
     
     def should_take_action(self, klines, use_case, current, look_ahead):
         ahead_log_return = math.log(sum(klines[i].close_price for i in range(
@@ -47,7 +47,8 @@ class DepthDeepLearningStrategy:
                     datetime.fromtimestamp(klines[look_ahead_kline_index].close_time / 1000.) < look_ahead_time:
                 look_ahead_kline_index += 1
             
-            if current_kline_index >= len(klines) or look_ahead_kline_index >= len(klines):
+            if current_kline_index >= len(klines) or look_ahead_kline_index >= len(klines) \
+                or current_kline_index == look_ahead_kline_index:
                 break
 
             X.append(self.depth_features(depth))

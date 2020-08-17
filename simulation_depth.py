@@ -18,7 +18,7 @@ from strategy.depth.order_book_imbalance import DepthOrderBookImbalanceStrategy
 CURRENCY_PAIR = 'ETHUSDT'
 LIMIT = 1000
 COMMISSION = 0.001
-KLINE_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_1m_1592265600000.json'
+KLINE_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_1m_1587136800000.json'
 TRAIN_FACTOR = 0.5
 
 
@@ -27,19 +27,18 @@ def simulate():
     logging.basicConfig(format=log_format, level=logging.INFO)
 
     depth_db = DepthDb(CURRENCY_PAIR, LIMIT)
-    depth_data = depth_db.read()
-    # n = depth_db.data_count()
+    depth_data = list(depth_db.read())
+    n = depth_db.data_count()
 
     # Deep learning
-    # save = False
-    # n = len(depth_data)
-    # n_start = n if save else int(n * TRAIN_FACTOR)
-    # klines = read_data.read_klines_from_json(file_path=KLINE_FILE_PATH)
-    # strat = DepthDeepLearningStrategy()
-    # depth_train = depth_data[0:n_start]
-    # depth_test = depth_data[n_start:]
-    # for use_case in ['buy', 'sell']:
-    #     strat.fit_model(klines, depth_train, use_case)
+    save = False
+    n_start = n if save else int(n * TRAIN_FACTOR)
+    klines = read_data.read_klines_from_json(file_path=KLINE_FILE_PATH)
+    strat = DepthDeepLearningStrategy()
+    depth_train = depth_data[0:n_start]
+    depth_test = depth_data[n_start:]
+    for use_case in ['buy', 'sell']:
+        strat.fit_model(klines, depth_train, use_case)
     
     depth_test = depth_data
 

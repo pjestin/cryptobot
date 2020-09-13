@@ -12,6 +12,10 @@ class Indicators:
     EMA_2_RANGE = 26
     MACD_EMA_RANGE = 9
 
+    @classmethod
+    def simple_moving_average(cls, x, K, nb_period):
+        return sum(x[K : K - nb_period : -1]) / nb_period
+
     exp_weights_cache = {}
 
     @classmethod
@@ -38,8 +42,8 @@ class Indicators:
     @classmethod
     def moving_average_conv_div_ema(cls, x, K):
         nb_period = cls.MACD_EMA_RANGE
-        macd_list = [cls.moving_average_conv_div(x, K + k - nb_period + 1) for k in range(0, nb_period)]
-        return cls.exp_moving_average(macd_list, nb_period - 1, nb_period)
+        macd_list = [None] + [cls.moving_average_conv_div(x, K + k - nb_period + 1) for k in range(0, nb_period)]
+        return cls.exp_moving_average(macd_list, nb_period, nb_period)
 
     @classmethod
     def macd_difference(cls, x, K):
@@ -94,3 +98,8 @@ class Indicators:
                 result.append(math.log(price / previous_price))
             previous_price = price
         return result
+    
+    @classmethod
+    def standard_deviation(cls, x, K, nb_period):
+        sma = cls.simple_moving_average(x, K, nb_period)
+        return math.sqrt(sum((price - sma) ** 2 for price in x[K : K - nb_period : -1]) / nb_period)

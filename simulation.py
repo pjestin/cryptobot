@@ -29,9 +29,10 @@ def run_simulation(klines, n_features, commission, save):
     previous_price = float('inf')
     sell_times = []
 
-    from strategy.klines.deep_learning import KlinesDeepLearningStrategy
+    # from strategy.klines.deep_learning import KlinesDeepLearningStrategy
     # from strategy.klines.ground_truth import KlinesGroundTruthStrategy
-    strat = KlinesDeepLearningStrategy(n_features=n_features)
+    from strategy.klines.indicator_ia import KlinesIndicatorIaStrategy
+    strat = KlinesIndicatorIaStrategy()
 
     klines_train = klines[0:n_start]
     for use_case in ['buy', 'sell']:

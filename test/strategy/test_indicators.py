@@ -7,6 +7,11 @@ class IndicatorsTest(unittest.TestCase):
     def setUp(self):
         self.x = [1., 3., 2.5, 3.4, .4, 4.5, .9, 0.1, .4]
 
+    def test_simple_moving_average(self):
+        self.assertEqual(.4, Indicators.simple_moving_average(self.x, K=8, nb_period=1))
+        self.assertEqual(.25, Indicators.simple_moving_average(self.x, K=8, nb_period=2))
+        self.assertEqual(1.475, Indicators.simple_moving_average(self.x, K=8, nb_period=4))
+
     def test_exp_weights(self):
         self.assertEqual([1.], Indicators.get_exp_weights(nb_period=1))
         self.assertEqual([0.7499999999999999, 0.25], Indicators.get_exp_weights(nb_period=2))
@@ -16,6 +21,11 @@ class IndicatorsTest(unittest.TestCase):
         self.assertEqual(.4, Indicators.exp_moving_average(self.x, K=8, nb_period=1))
         self.assertEqual(.325, Indicators.exp_moving_average(self.x, K=8, nb_period=2))
         self.assertEqual(.806985294117647, Indicators.exp_moving_average(self.x, K=8, nb_period=4))
+    
+    def test_macd(self):
+        x = [1., 3., 2.5, 3.4, .4, 4.5, .9, 0.1, .4, 1., 3., 2.5, 3.4, .4, 4.5, .9, 0.1,
+            .4, 1., 3., 2.5, 3.4, .4, 4.5, .9, 0.1, .4, 1., 3., 2.5, 3.4, .4, 4.5, .9, 0.1, .4]
+        self.assertEqual(-0.2538752409938012, Indicators.macd_difference(x, len(x) - 1))
 
     def test_rsi(self):
         self.assertEqual(0., Indicators.rsi(self.x, 0, 0))
@@ -51,3 +61,8 @@ class IndicatorsTest(unittest.TestCase):
             1.3862943611198906
         ]
         self.assertEqual(expected_returns, Indicators.log_returns(self.x))
+
+    def test_standard_deviation(self):
+        self.assertEqual(0.0, Indicators.standard_deviation(self.x, K=8, nb_period=1))
+        self.assertEqual(0.15000000000000002, Indicators.standard_deviation(self.x, K=8, nb_period=2))
+        self.assertEqual(1.769710428290459, Indicators.standard_deviation(self.x, K=8, nb_period=4))

@@ -7,6 +7,8 @@ import time
 import argparse
 import logging
 import math
+import re
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,15 +17,31 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/klines/binance_klines_LTCUSDT_4h_1513123200000.json'
+TEST_FILE_PATH = 'data/klines/binance_klines_BNBUSDT_4h_1509926400000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = .5
 N_FEATURES = 1000
+MODEL_VERSION = '2020-09-25'
+MODEL_TO_VALIDATE = 'BNBUSDT-4h'
 
 
-def run_simulation(klines, n_features, commission, save):
+def fit(strat):
+    rootdir = "models/{}".format(MODEL_VERSION)
+    for use_case in ['buy', 'sell']:
+        regex = re.compile('{}-{}-.*'.format(MODEL_TO_VALIDATE, use_case))
+        for dir in os.listdir(rootdir):
+            if regex.match(dir):
+                strat.load_model(os.path.join(rootdir, dir), use_case)
+                break
+    if strat.buy_model is None:
+        logging.error('No data file matched for buy model')
+    if strat.sell_model is None:
+        logging.error('No data file matched for sell model')
+
+
+def run_simulation(klines, n_features, commission, save, validate):
     n = len(klines)
-    n_start = n if save else int(n * TRAIN_FACTOR)
+    n_start = n if save else 0 if validate else int(n * TRAIN_FACTOR)
     money = [0.]
     acquired = None
     previous_price = float('inf')
@@ -34,13 +52,16 @@ def run_simulation(klines, n_features, commission, save):
     from strategy.klines.indicator_ia import KlinesIndicatorIaStrategy
     strat = KlinesIndicatorIaStrategy()
 
-    klines_train = klines[0:n_start]
-    for use_case in ['buy', 'sell']:
-        strat.fit_model(klines_train, use_case)
+    if not validate:
+        klines_train = klines[0:n_start]
+        for use_case in ['buy', 'sell']:
+            strat.fit_model(klines_train, use_case)
 
     if save:
         strat.save_models()
         return
+    elif validate:
+        fit(strat)
     else:
         klines_test = klines[n_start:]
         # strat.evaluate_models(klines_test)
@@ -100,16 +121,21 @@ def simulate(**kwargs):
         description='Simulation on crypto currency trading strategies')
     parser.add_argument('-s', '--save',
                         help='Save model', action='store_true')
+    parser.add_argument('-v', '--validate',
+                        help='Validate model', action='store_true')
     args = parser.parse_args()
 
     log_format = '%(asctime)-15s %(message)s'
     logging.basicConfig(format=log_format, level=logging.INFO)
 
+    if args.save and args.validate:
+        raise RuntimeError('Cant save and validate')
+
     klines = read_data.read_klines_from_json(
         file_path=TEST_FILE_PATH)
 
-    run_simulation(klines, n_features=N_FEATURES,
-                   commission=COMMISSION, save=args.save)
+    run_simulation(klines, n_features=N_FEATURES, commission=COMMISSION,
+        save=args.save, validate=args.validate)
 
 
 if __name__ == '__main__':

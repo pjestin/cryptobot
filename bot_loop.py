@@ -149,7 +149,9 @@ def run(params):
 
     # from strategy.klines.deep_learning import KlinesDeepLearningStrategy
     # strat = KlinesDeepLearningStrategy(n_features=n_ref)
-    # fit(strat, currency_pair, interval, model_version)
+    from strategy.klines.indicator_ia import KlinesIndicatorIaStrategy
+    strat = KlinesIndicatorIaStrategy()
+    fit(strat, currency_pair, interval, model_version)
     
     state = {
         'money': -buy_quantity_factor if buy_quantity_factor else 0.,
@@ -168,21 +170,21 @@ def run(params):
         begin_time = time.time()
 
         # Kline history
-        # klines = binance.get_klines(
-        #     limit=n_ref, interval=interval, currency_pair=currency_pair)
+        klines = binance.get_klines(
+            limit=n_ref, interval=interval, currency_pair=currency_pair)
 
-        # if klines:
-        #     logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
-        #             .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price']))
-        #     probe_and_act_with_klines(klines, strat, binance, state)
+        if klines:
+            logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
+                    .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price']))
+            probe_and_act_with_klines(klines, strat, binance, state)
         
         # Depth
-        depth = binance.get_current_depth(currency_pair, depth_limit)
+        # depth = binance.get_current_depth(currency_pair, depth_limit)
 
-        if depth:
-            logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
-                    .format(i, state['money'], state['nb_transactions'], depth.bids[0][0] / state['previous_price']))
-            probe_and_act_with_depth(depth, binance, state)
+        # if depth:
+        #     logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
+        #             .format(i, state['money'], state['nb_transactions'], depth.bids[0][0] / state['previous_price']))
+        #     probe_and_act_with_depth(depth, binance, state)
 
         # Sleep if duration was shorter than period
         duration = time.time() - begin_time

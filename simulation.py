@@ -15,7 +15,7 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_15m_1502942400000.json'
+TEST_FILE_PATH = 'data/klines/binance_klines_LTCUSDT_4h_1513123200000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = .5
 N_FEATURES = 1000
@@ -42,7 +42,7 @@ def run_simulation(klines, n_features, commission, save):
         strat.save_models()
         return
     else:
-        klines_test = klines[n_start:] 
+        klines_test = klines[n_start:]
         # strat.evaluate_models(klines_test)
 
     for k in range(n_start + n_features, n):
@@ -108,7 +108,8 @@ def simulate(**kwargs):
     klines = read_data.read_klines_from_json(
         file_path=TEST_FILE_PATH)
 
-    run_simulation(klines, n_features=N_FEATURES, commission=COMMISSION, save=args.save)
+    run_simulation(klines, n_features=N_FEATURES,
+                   commission=COMMISSION, save=args.save)
 
 
 if __name__ == '__main__':

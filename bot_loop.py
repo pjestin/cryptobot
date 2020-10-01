@@ -7,7 +7,7 @@ import argparse
 import logging
 import sys
 import json
-from datetime import timedelta
+from datetime import datetime, timedelta
 import os
 import re
 
@@ -17,7 +17,7 @@ from strategy.depth.order_book_imbalance import DepthOrderBookImbalanceStrategy
 
 LOG_FILE = 'log/{}.log'
 PROFILE_FILE = 'profiles.json'
-TIME_DIFF_FACTOR = 4.
+RECENT_TRANSACTION_MIN = timedelta(hours=4)
 N_REF = 1000
 COMMISSION = 0.001
 
@@ -95,6 +95,10 @@ def probe_and_act_with_klines(klines, strat, binance, state):
     currency_pair = state['currency_pair']
     period = state['period']
 
+    # Skip if recent transaction
+    if state['last_transac_time'] and datetime.utcnow() - state['last_transac_time'] < RECENT_TRANSACTION_MIN:
+        return
+
     action = strat.decide_action(klines, acquired)
 
     # Buy or sell
@@ -110,6 +114,7 @@ def probe_and_act_with_klines(klines, strat, binance, state):
             price = float(order['fills'][0]['price'])
         state['previous_price'] = price
         state['nb_transactions'] += 1
+        state['last_transac_time'] = datetime.utcnow()
         state['buy_quantity'] = buy_quantity
         state['buy_quantity_factor'] = buy_quantity_factor
         state['acquired'] = (1 - commission) * buy_quantity_factor / price
@@ -124,6 +129,7 @@ def probe_and_act_with_klines(klines, strat, binance, state):
             price = float(order['fills'][0]['price'])
         state['previous_price'] = price
         state['nb_transactions'] += 1
+        state['last_transac_time'] = datetime.utcnow()
         state['buy_quantity'] = None
         state['buy_quantity_factor'] = None
         state['acquired'] = None
@@ -157,6 +163,7 @@ def run(params):
         'money': -buy_quantity_factor if buy_quantity_factor else 0.,
         'previous_price': acquired_price if acquired_price else float('inf'),
         'nb_transactions': 0,
+        'last_transac_time': None,
         'acquired': buy_quantity_factor / acquired_price if acquired_price else None,
         'buy_quantity_factor': buy_quantity_factor,
         'buy_quantity': buy_quantity,

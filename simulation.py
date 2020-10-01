@@ -64,7 +64,7 @@ def run_simulation(klines, n_features, commission, save, validate):
         fit(strat)
     else:
         klines_test = klines[n_start:]
-        # strat.evaluate_models(klines_test)
+        strat.evaluate_models(klines_test)
 
     for k in range(n_start + n_features, n):
         klines_ref = klines[k-n_features:k]

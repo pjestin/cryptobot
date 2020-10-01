@@ -20,6 +20,7 @@ PROFILE_FILE = 'profiles.json'
 RECENT_TRANSACTION_MIN = timedelta(hours=4)
 N_REF = 1000
 COMMISSION = 0.001
+USE_DEPTH = False
 
 
 def probe_and_act_with_depth(depth, binance, state):
@@ -38,8 +39,7 @@ def probe_and_act_with_depth(depth, binance, state):
 
     # Buy or sell
     if not acquired and action.is_buy():
-        buy_quantity_factor = 1. #action.quantity_factor
-        buy_quantity = float('%.3g' % (quantity * buy_quantity_factor))
+        buy_quantity = float('%.3g' % quantity)
         logging.info('Buying {} at {}; money: {}'.format(buy_quantity, depth.asks[0][0], money))
         if simulate:
             price = binance.last_price(currency_pair)
@@ -50,9 +50,8 @@ def probe_and_act_with_depth(depth, binance, state):
         state['previous_price'] = price
         state['nb_transactions'] += 1
         state['buy_quantity'] = buy_quantity
-        state['buy_quantity_factor'] = buy_quantity_factor
-        state['acquired'] = (1 - commission) * buy_quantity_factor / price
-        state['money'] -= buy_quantity_factor
+        state['acquired'] = (1 - commission) / price
+        state['money'] -= 1.
     elif acquired and action.is_sell():
         logging.info('Selling {} at {}; money: {}'.format(buy_quantity, depth.bids[0][0], money))
         if simulate:
@@ -64,7 +63,6 @@ def probe_and_act_with_depth(depth, binance, state):
         state['previous_price'] = price
         state['nb_transactions'] += 1
         state['buy_quantity'] = None
-        state['buy_quantity_factor'] = None
         state['acquired'] = None
         state['money'] += (1 - commission) * acquired * price
 
@@ -103,8 +101,7 @@ def probe_and_act_with_klines(klines, strat, binance, state):
 
     # Buy or sell
     if not acquired and action.is_buy():
-        buy_quantity_factor = 1. #action.quantity_factor
-        buy_quantity = float('%.3g' % (quantity * buy_quantity_factor))
+        buy_quantity = float('%.3g' % quantity)
         logging.info('Buying {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
         if simulate:
             price = binance.last_price(currency_pair)
@@ -116,9 +113,8 @@ def probe_and_act_with_klines(klines, strat, binance, state):
         state['nb_transactions'] += 1
         state['last_transac_time'] = datetime.utcnow()
         state['buy_quantity'] = buy_quantity
-        state['buy_quantity_factor'] = buy_quantity_factor
-        state['acquired'] = (1 - commission) * buy_quantity_factor / price
-        state['money'] -= buy_quantity_factor
+        state['acquired'] = (1 - commission) / price
+        state['money'] -= 1.
     elif acquired and action.is_sell():
         logging.info('Selling {} at {}; money: {}'.format(buy_quantity, klines[-1].close_price, money))
         if simulate:
@@ -131,7 +127,6 @@ def probe_and_act_with_klines(klines, strat, binance, state):
         state['nb_transactions'] += 1
         state['last_transac_time'] = datetime.utcnow()
         state['buy_quantity'] = None
-        state['buy_quantity_factor'] = None
         state['acquired'] = None
         state['money'] += (1 - commission) * acquired * price
 
@@ -151,7 +146,6 @@ def run(params):
     logging.info('Last trade in this currency pair: {}'.format(last_trade))
     acquired_price = last_trade.price if last_trade and last_trade.is_buy else None
     buy_quantity = float('%.3g' % (last_trade.quantity)) if last_trade and last_trade.is_buy else None
-    buy_quantity_factor = float('%.3g' % (buy_quantity / quantity)) if buy_quantity else None
 
     # from strategy.klines.deep_learning import KlinesDeepLearningStrategy
     # strat = KlinesDeepLearningStrategy(n_features=n_ref)
@@ -160,12 +154,11 @@ def run(params):
     fit(strat, currency_pair, interval, model_version)
     
     state = {
-        'money': -buy_quantity_factor if buy_quantity_factor else 0.,
+        'money': -1. if acquired_price else 0.,
         'previous_price': acquired_price if acquired_price else float('inf'),
         'nb_transactions': 0,
         'last_transac_time': None,
-        'acquired': buy_quantity_factor / acquired_price if acquired_price else None,
-        'buy_quantity_factor': buy_quantity_factor,
+        'acquired': 1. / acquired_price if acquired_price else None,
         'buy_quantity': buy_quantity,
     }
 
@@ -176,22 +169,27 @@ def run(params):
         i += 1
         begin_time = time.time()
 
-        # Kline history
-        klines = binance.get_klines(
-            limit=n_ref, interval=interval, currency_pair=currency_pair)
+        if USE_DEPTH:
 
-        if klines:
-            logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
-                    .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price']))
-            probe_and_act_with_klines(klines, strat, binance, state)
+            # Depth
+            depth = binance.get_current_depth(currency_pair, depth_limit)
+
+            if depth:
+                logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
+                        .format(i, state['money'], state['nb_transactions'], depth.bids[0][0] / state['previous_price']))
+                probe_and_act_with_depth(depth, binance, state)
         
-        # Depth
-        # depth = binance.get_current_depth(currency_pair, depth_limit)
+        else:
 
-        # if depth:
-        #     logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
-        #             .format(i, state['money'], state['nb_transactions'], depth.bids[0][0] / state['previous_price']))
-        #     probe_and_act_with_depth(depth, binance, state)
+            # Kline history
+            klines = binance.get_klines(
+                limit=n_ref, interval=interval, currency_pair=currency_pair)
+
+            if klines:
+                logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
+                        .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price']))
+                probe_and_act_with_klines(klines, strat, binance, state)
+
 
         # Sleep if duration was shorter than period
         duration = time.time() - begin_time

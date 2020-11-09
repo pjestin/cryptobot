@@ -49,12 +49,12 @@ def analyse_trades(currency_pairs, start_date=None):
                 prices.append(trade.price / first_price - 1.)
                 acquired_price = None
             previous_price = trade.price
-    
+
         plt.subplot(len(CURRENCY_PAIRS), 1, index + 1)
         plt.title(currency_pair)
-        plt.plot(t_money, money)
-        plt.plot(t_prices, prices)
-    
+        plt.plot(t_money, money, color='blue')
+        plt.plot(t_prices, prices, color='red')
+
     plt.show()
 
 

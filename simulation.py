@@ -17,7 +17,7 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/klines/binance_klines_BNBUSDT_4h_1509926400000.json'
+TEST_FILE_PATH = 'data/klines/binance_klines_ETHUSDT_4h_1502942400000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = .5
 N_FEATURES = 1000
@@ -48,6 +48,7 @@ def run_simulation(klines, n_features, commission, save, validate):
     sell_times = []
 
     # from strategy.klines.deep_learning import KlinesDeepLearningStrategy
+    # strat = KlinesDeepLearningStrategy(n_features)
     # from strategy.klines.ground_truth import KlinesGroundTruthStrategy
     from strategy.klines.indicator_ia import KlinesIndicatorIaStrategy
     strat = KlinesIndicatorIaStrategy()

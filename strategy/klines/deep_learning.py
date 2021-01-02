@@ -23,7 +23,7 @@ class KlinesDeepLearningStrategy:
 
     def should_take_action(self, klines, use_case, k):
         ahead_log_return = math.log(sum(klines[i].close_price for i in range(
-                k + 1, k + self.LOOK_AHEAD + 1)) / (self.LOOK_AHEAD * klines[k].close_price))
+            k + 1, k + self.LOOK_AHEAD + 1)) / (self.LOOK_AHEAD * klines[k].close_price))
         if use_case == 'buy':
             return ahead_log_return > self.MIN_LOG_RETURN
         elif use_case == 'sell':
@@ -49,13 +49,14 @@ class KlinesDeepLearningStrategy:
         X, y = self.gather_data(klines, use_case)
 
         model = tf.keras.models.Sequential([
-            tf.keras.layers.Dense(50, input_dim=self.n_features, activation='tanh'),
+            tf.keras.layers.Dense(
+                50, input_dim=self.n_features, activation='tanh'),
             tf.keras.layers.Dense(1, activation='sigmoid')
         ])
 
         model.compile(optimizer='adam',
-                        loss='binary_crossentropy',
-                        metrics=['accuracy'])
+                      loss='binary_crossentropy',
+                      metrics=['accuracy'])
 
         model.fit(X, y, epochs=self.N_EPOCHS, verbose=2)
 
@@ -66,8 +67,10 @@ class KlinesDeepLearningStrategy:
 
     def save_models(self):
         now = datetime.utcnow()
-        self.buy_model.save('models/{}/buy-{}'.format(now.date().isoformat(), now.isoformat()))
-        self.sell_model.save('models/{}/sell-{}'.format(now.date().isoformat(), now.isoformat()))
+        self.buy_model.save(
+            'models/{}/buy-{}'.format(now.date().isoformat(), now.isoformat()))
+        self.sell_model.save(
+            'models/{}/sell-{}'.format(now.date().isoformat(), now.isoformat()))
 
     def evaluate_models(self, klines):
         X_buy, y_buy = self.gather_data(klines, 'buy')

@@ -1,26 +1,16 @@
 {
-    "bnbusdt": {
-        "currency_pair": "BNBUSDT",
-        "quantity": 1.0,
+    "xlmbnb": {
+        "currency_pair": "XLMBNB",
+        "quantity": 200,
         "period": 60,
-        "interval": "4h",
-        "model_version": "2020-09-25",
-        "depth_limit": 1000
+        "interval": "15m",
+        "model_version": "2021-01-02"
     },
-    "btcusdt": {
-        "currency_pair": "BTCUSDT",
-        "quantity": 0.0015,
+    "adabnb": {
+        "currency_pair": "ADABNB",
+        "quantity": 200,
         "period": 60,
-        "interval": "4h",
-        "model_version": "2020-09-25",
-        "depth_limit": 1000
-    },
-    "ethusdt": {
-        "currency_pair": "ETHUSDT",
-        "quantity": 0.06,
-        "period": 60,
-        "interval": "4h",
-        "model_version": "2020-09-25",
-        "depth_limit": 1000
+        "interval": "15m",
+        "model_version": "2021-01-02"
     }
 }

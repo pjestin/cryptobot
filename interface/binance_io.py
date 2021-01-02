@@ -119,6 +119,8 @@ class BinanceInterface():
         return merged_trades
 
     def last_trade(self, currency_pair):
+        if not self.my_trade_history(currency_pair):
+            return None
         return self.my_trade_history(currency_pair)[-1]
     
     def get_current_depth(self, currency_pair, limit=None):

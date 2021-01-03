@@ -152,6 +152,7 @@ def run(params):
     acquired_price = last_trade.price if last_trade and last_trade.is_buy else None
     buy_quantity = float('%.3g' % (last_trade.quantity)
                          ) if last_trade and last_trade.is_buy else None
+    start_price = binance.last_price(currency_pair)
 
     from strategy.klines.deep_learning import KlinesDeepLearningStrategy
     strat = KlinesDeepLearningStrategy(n_features=n_ref)
@@ -192,8 +193,8 @@ def run(params):
                 limit=n_ref, interval=interval, currency_pair=currency_pair)
 
             if klines:
-                logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}'
-                             .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price']))
+                logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}; market: {}'
+                             .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price'], klines[-1].close_price / start_price))
                 probe_and_act_with_klines(klines, strat, binance, state)
 
         # Sleep if duration was shorter than period

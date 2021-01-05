@@ -1,9 +1,0 @@
-version: "3"
-services:
-  cryptobot-adabnb:
-    image: cryptobot
-    volumes:
-      - .:/app/cryptobot
-    environment:
-      - command=bot_loop.py -p adabnb
-

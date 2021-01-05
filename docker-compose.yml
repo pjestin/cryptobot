@@ -1,8 +1,15 @@
 version: "3"
 services:
-  cryptobot-xlmbnb:
+  adabnb:
+    image: cryptobot
+    volumes:
+      - .:/app/cryptobot
+    environment:
+      - command=bot_loop.py -p adabnb
+  xlmbnb:
     image: cryptobot
     volumes:
       - .:/app/cryptobot
     environment:
       - command=bot_loop.py -p xlmbnb
+

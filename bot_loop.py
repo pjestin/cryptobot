@@ -194,7 +194,7 @@ def run(params):
 
             if klines:
                 logging.info('Run {}; money: {}; transactions: {}; price ratio to previous: {}; market: {}'
-                             .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price'], klines[-1].close_price / start_price))
+                             .format(i, state['money'], state['nb_transactions'], klines[-1].close_price / state['previous_price'], klines[-1].close_price / start_price - 1))
                 probe_and_act_with_klines(klines, strat, binance, state)
 
         # Sleep if duration was shorter than period

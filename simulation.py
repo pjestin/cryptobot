@@ -49,9 +49,6 @@ def run_simulation(klines, n_features, commission, save, validate):
 
     from strategy.klines.deep_learning import KlinesDeepLearningStrategy
     strat = KlinesDeepLearningStrategy(n_features)
-    # from strategy.klines.ground_truth import KlinesGroundTruthStrategy
-    # from strategy.klines.indicator_ia import KlinesIndicatorIaStrategy
-    # strat = KlinesIndicatorIaStrategy()
 
     if not validate:
         klines_train = klines[0:n_start]

@@ -156,8 +156,6 @@ def run(params):
 
     from strategy.klines.deep_learning import KlinesDeepLearningStrategy
     strat = KlinesDeepLearningStrategy(n_features=n_ref)
-    # from strategy.klines.indicator_ia import KlinesIndicatorIaStrategy
-    # strat = KlinesIndicatorIaStrategy()
     fit(strat, currency_pair, interval, model_version)
 
     state = {

@@ -4,7 +4,7 @@
         "quantity": 200,
         "period": 60,
         "interval": "15m",
-        "model_version": "2021-01-02"
+        "model_version": "2021-01-15"
     },
     "adabnb": {
         "currency_pair": "ADABNB",

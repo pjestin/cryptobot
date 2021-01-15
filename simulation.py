@@ -17,12 +17,12 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/klines/binance_klines_XLMBNB_15m_1559347200000.json'
+TEST_FILE_PATH = 'data/klines/binance_klines_XLMBNB_15m_1529971200000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = .5
 N_FEATURES = 1000
-MODEL_VERSION = '2020-09-25'
-MODEL_TO_VALIDATE = 'BNBUSDT-4h'
+MODEL_VERSION = '2021-01-15'
+MODEL_TO_VALIDATE = 'XLMBNB-15m'
 
 
 def fit(strat):

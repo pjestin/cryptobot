@@ -9,18 +9,19 @@ from interface.depth_db import DepthDb
 class DepthDbTest(unittest.TestCase):
 
     def setUp(self):
-        self.TEST_DB_FILE = 'data/depth/binance_depth_DOGEUSDT_500.db'
+        self.TEST_DB_FILE = 'test/data/depth/binance_depth_DOGEUSDT_500.db'
         if os.path.isfile(self.TEST_DB_FILE):
             os.remove(self.TEST_DB_FILE)
         self.now = datetime(2019, 10, 25, 15, 2)
         self.depth = Depth(self.now,
-            [[10., 1.], [11., 3.]],
-            [[9., 2.], [9.5, 1.]]
-        )
+                           [[10., 1.], [11., 3.]],
+                           [[9., 2.], [9.5, 1.]]
+                           )
         self.currency_pair = 'DOGEUSDT'
         self.limit = 500
         self.depth_db = DepthDb(self.currency_pair, self.limit)
-    
+        self.depth_db.file_path = self.TEST_DB_FILE
+
     def tearDown(self):
         if os.path.isfile(self.TEST_DB_FILE):
             os.remove(self.TEST_DB_FILE)

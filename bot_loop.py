@@ -17,7 +17,7 @@ from strategy.depth.order_book_imbalance import DepthOrderBookImbalanceStrategy
 
 LOG_FILE = 'log/{}.log'
 PROFILE_FILE = 'profiles.json'
-RECENT_TRANSACTION_MIN = timedelta(hours=4)
+RECENT_TRANSACTION_MIN = timedelta(hours=2)
 N_REF = 1000
 COMMISSION = 0.001
 USE_DEPTH = False
@@ -154,9 +154,11 @@ def run(params):
                          ) if last_trade and last_trade.is_buy else None
     start_price = binance.last_price(currency_pair)
 
-    from strategy.klines.deep_learning import KlinesDeepLearningStrategy
-    strat = KlinesDeepLearningStrategy(n_features=n_ref)
-    fit(strat, currency_pair, interval, model_version)
+    # from strategy.klines.deep_learning import KlinesDeepLearningStrategy
+    # strat = KlinesDeepLearningStrategy(n_features=n_ref)
+    # fit(strat, currency_pair, interval, model_version)
+    from strategy.klines.bollinger_bands import KlinesBollingerBandsStrategy
+    strat = KlinesBollingerBandsStrategy()
 
     state = {
         'money': -1. if acquired_price else 0.,

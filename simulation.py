@@ -17,7 +17,7 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/klines/binance_klines_XLMBNB_15m_1529971200000.json'
+TEST_FILE_PATH = 'data/klines/binance_klines_XLMBNB_15m_1512712800000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = .5
 N_FEATURES = 1000
@@ -47,22 +47,24 @@ def run_simulation(klines, n_features, commission, save, validate):
     previous_price = float('inf')
     sell_times = []
 
-    from strategy.klines.deep_learning import KlinesDeepLearningStrategy
-    strat = KlinesDeepLearningStrategy(n_features)
+    # from strategy.klines.deep_learning import KlinesDeepLearningStrategy
+    # strat = KlinesDeepLearningStrategy(n_features)
+    from strategy.klines.bollinger_bands import KlinesBollingerBandsStrategy
+    strat = KlinesBollingerBandsStrategy()
 
-    if not validate:
-        klines_train = klines[0:n_start]
-        for use_case in ['buy', 'sell']:
-            strat.fit_model(klines_train, use_case)
+    # if not validate:
+    #     klines_train = klines[0:n_start]
+    #     for use_case in ['buy', 'sell']:
+    #         strat.fit_model(klines_train, use_case)
 
-    if save:
-        strat.save_models()
-        return
-    elif validate:
-        fit(strat)
-    else:
-        klines_test = klines[n_start:]
-        strat.evaluate_models(klines_test)
+    # if save:
+    #     strat.save_models()
+    #     return
+    # elif validate:
+    #     fit(strat)
+    # else:
+    #     klines_test = klines[n_start:]
+    #     strat.evaluate_models(klines_test)
 
     for k in range(n_start + n_features, n):
         klines_ref = klines[k-n_features:k]

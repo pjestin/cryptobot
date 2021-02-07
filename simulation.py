@@ -17,7 +17,7 @@ import tensorflow as tf
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/klines/binance_klines_XLMBNB_15m_1512712800000.json'
+TEST_FILE_PATH = 'data/klines/binance_klines_XMRBNB_15m_1552622400000.json'
 COMMISSION = 0.001
 TRAIN_FACTOR = .5
 N_FEATURES = 1000

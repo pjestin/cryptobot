@@ -1,4 +1,12 @@
 {
+    "adabnb": {
+        "currency_pair": "ADABNB",
+        "quantity": 200,
+        "period": 60,
+        "interval": "15m",
+        "model_version": "2021-01-02",
+        "depth_limit": 1000
+    },
     "xlmbnb": {
         "currency_pair": "XLMBNB",
         "quantity": 400,
@@ -7,12 +15,12 @@
         "model_version": "2021-01-15",
         "depth_limit": 1000
     },
-    "adabnb": {
-        "currency_pair": "ADABNB",
-        "quantity": 200,
+    "xmrbnb": {
+        "currency_pair": "XMRBNB",
+        "quantity": 1,
         "period": 60,
         "interval": "15m",
-        "model_version": "2021-01-02",
+        "model_version": "2021-01-15",
         "depth_limit": 1000
     }
 }

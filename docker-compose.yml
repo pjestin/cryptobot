@@ -12,4 +12,10 @@ services:
       - .:/app/cryptobot
     environment:
       - command=bot_loop.py -p xlmbnb
+  xmrbnb:
+    image: pjestin/cryptobot
+    volumes:
+      - .:/app/cryptobot
+    environment:
+      - command=bot_loop.py -p xmrbnb
 

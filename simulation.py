@@ -12,14 +12,14 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
 
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/klines/binance_klines_XMRBNB_15m_1552622400000.json'
+TEST_FILE_PATH = 'data/klines/binance_klines_TRXBNB_15m_1528789500000.json'
 COMMISSION = 0.001
-TRAIN_FACTOR = .5
+TRAIN_FACTOR = .0
 N_FEATURES = 1000
 MODEL_VERSION = '2021-01-15'
 MODEL_TO_VALIDATE = 'XLMBNB-15m'

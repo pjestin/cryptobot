@@ -17,7 +17,7 @@ from strategy.depth.order_book_imbalance import DepthOrderBookImbalanceStrategy
 
 LOG_FILE = 'log/{}.log'
 PROFILE_FILE = 'profiles.json'
-RECENT_TRANSACTION_MIN = timedelta(hours=1)
+RECENT_TRANSACTION_MIN = timedelta(hours=0)
 N_REF = 1000
 COMMISSION = 0.001
 USE_DEPTH = False

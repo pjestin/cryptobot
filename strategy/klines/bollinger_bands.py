@@ -8,21 +8,29 @@ class KlinesBollingerBandsStrategy:
 
     NB_PERIODS = 20
     STD_DEV_FACTOR = 1.
-    
+
     def decide_action(self, klines, acquired):
-        prices = [kline.close_price for kline in klines]
+        current_price = klines[-1].close_price
+
+        typical_prices = [(kline.close_price + kline.high_price +
+                           kline.low_price) / 3 for kline in klines]
+
+        # Get current trend
+        past_ma = Indicators.simple_moving_average(typical_prices, len(
+            typical_prices) - self.NB_PERIODS, self.NB_PERIODS)
 
         # Get std deviation and MA until second to last close price (finished klines)
-        std_deviation = Indicators.standard_deviation(prices, len(prices) - 2, self.NB_PERIODS)
-        ma = Indicators.simple_moving_average(prices, len(prices) - 2, self.NB_PERIODS)
+        std_deviation = Indicators.standard_deviation(
+            typical_prices, len(typical_prices) - 2, self.NB_PERIODS)
+        ma = Indicators.simple_moving_average(
+            typical_prices, len(typical_prices) - 2, self.NB_PERIODS)
 
-        # Compare with current price
-        current_price = prices[-1]
+        if std_deviation != 0:
+            logging.debug('Current price compared to Bollinger bands: {}; trend: {}'.format(
+                (current_price - ma) / std_deviation, ma / past_ma))
 
-        logging.debug('Current price compared to Bollinger bands: {}'.format((current_price - ma) / std_deviation))
-
-        if not acquired and current_price < ma - self.STD_DEV_FACTOR * std_deviation:
+        if not acquired and ma > past_ma and current_price < ma - self.STD_DEV_FACTOR * std_deviation:
             return TradeAction('buy')
-        if acquired and current_price > ma + self.STD_DEV_FACTOR * std_deviation:
+        if acquired and ma < past_ma and current_price > ma + self.STD_DEV_FACTOR * std_deviation:
             return TradeAction('sell')
         return TradeAction(None)

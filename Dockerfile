@@ -1,4 +1,4 @@
-FROM arm64v8/python:3.7-buster
+FROM arm64v8/python:3.9-slim-buster
 WORKDIR /app/cryptobot
 RUN apt-get update
 RUN apt-get -y install build-essential libatlas-base-dev llvm python-openssl libhdf5-dev

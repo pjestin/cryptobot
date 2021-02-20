@@ -18,7 +18,7 @@ PROFILE_FILE = 'profiles.json'
 def read_currency_pairs_from_profiles():
     with open(PROFILE_FILE, newline='') as file:
         profiles = json.load(file)
-        return profiles.keys()
+        return [profile['currency_pair'] for profile in profiles.values()]
 
 def analyse_trades(currency_pairs, start_date=None):
     binance = BinanceInterface()

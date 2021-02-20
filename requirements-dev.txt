@@ -1,4 +1,0 @@
-discover
-matplotlib
-numpy
-python-binance

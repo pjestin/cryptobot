@@ -54,7 +54,7 @@ class BinanceInterface():
         ))
         logging.info('Number of klines: {}'.format(len(klines)))
         first_time = klines[0][0]
-        file_name = 'data/klines/binance_klines_{}_{}_{}.json'.format(
+        file_name = 'data/binance_klines_{}_{}_{}.json'.format(
             currency_pair, interval, first_time)
         with open(file_name, mode='w') as file:
             json.dump(klines, file)

@@ -11,7 +11,7 @@ from interface import read_data
 
 class BinanceInterfaceTest(unittest.TestCase):
 
-    TEST_KLINE_DATA_FILE = 'data/klines/binance_klines_DOGEUSDT_2m_1509926400000.json'
+    TEST_KLINE_DATA_FILE = 'data/binance_klines_DOGEUSDT_2m_1509926400000.json'
 
     def setUp(self):
         if os.path.isfile(self.TEST_KLINE_DATA_FILE):

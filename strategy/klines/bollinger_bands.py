@@ -26,8 +26,8 @@ class KlinesBollingerBandsStrategy:
             typical_prices, len(typical_prices) - 2, self.NB_PERIODS)
 
         if std_deviation != 0:
-            logging.debug('Current price compared to Bollinger bands: {}'.format(
-                (current_price - ma) / std_deviation))
+            logging.debug('Current price compared to Bollinger bands: {}; trend: {}'.format(
+                (current_price - ma) / std_deviation, ma / past_ma - 1.))
 
         if not acquired and ma > past_ma and current_price < ma - self.STD_DEV_FACTOR * std_deviation:
             return TradeAction('buy')

@@ -8,6 +8,7 @@ class KlinesBollingerBandsStrategy:
 
     NB_PERIODS = 20
     STD_DEV_FACTOR = 1.
+    TREND_NB_PERIODS = 20
 
     def decide_action(self, klines, acquired):
         current_price = klines[-1].close_price
@@ -16,13 +17,13 @@ class KlinesBollingerBandsStrategy:
                            kline.low_price) / 3 for kline in klines]
 
         # Get current trend
-        past_ma = Indicators.simple_moving_average(typical_prices, len(
-            typical_prices) - self.NB_PERIODS, self.NB_PERIODS)
+        past_ma = Indicators.exp_moving_average(typical_prices, len(
+            typical_prices) - self.TREND_NB_PERIODS, self.NB_PERIODS)
 
         # Get std deviation and MA until second to last close price (finished klines)
         std_deviation = Indicators.standard_deviation(
             typical_prices, len(typical_prices) - 2, self.NB_PERIODS)
-        ma = Indicators.simple_moving_average(
+        ma = Indicators.exp_moving_average(
             typical_prices, len(typical_prices) - 2, self.NB_PERIODS)
 
         if std_deviation != 0:

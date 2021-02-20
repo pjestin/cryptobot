@@ -5,7 +5,6 @@ RUN apt-get -y install build-essential libatlas-base-dev llvm python-openssl lib
 RUN useradd -m -u 1000 -s /bin/bash cryptouser
 USER cryptouser
 RUN python -m pip install --upgrade pip
-RUN python -m pip install https://github.com/lhelontra/tensorflow-on-arm/releases/download/v2.4.0/tensorflow-2.4.0-cp37-none-linux_aarch64.whl
 COPY requirements.txt /home/cryptouser
 RUN python -m pip install -r /home/cryptouser/requirements.txt
 ENV command --version

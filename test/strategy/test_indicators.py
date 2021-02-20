@@ -34,8 +34,8 @@ class IndicatorsTest(unittest.TestCase):
     def test_macd(self):
         x = [1., 3., 2.5, 3.4, .4, 4.5, .9, 0.1, .4, 1., 3., 2.5, 3.4, .4, 4.5, .9, 0.1,
              .4, 1., 3., 2.5, 3.4, .4, 4.5, .9, 0.1, .4, 1., 3., 2.5, 3.4, .4, 4.5, .9, 0.1, .4]
-        self.assertEqual(-0.253875240993801,
-                         Indicators.macd_difference(x, len(x) - 1))
+        macd = Indicators.macd_difference(x, len(x) - 1)
+        self.assertTrue(abs(-0.253875240993801 - macd) < 0.001)
 
     def test_rsi(self):
         self.assertEqual(0., Indicators.rsi(self.x, 0, 0))

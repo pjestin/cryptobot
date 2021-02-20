@@ -11,60 +11,26 @@ import re
 import os
 
 import matplotlib.pyplot as plt
-import numpy as np
-# import tensorflow as tf
 
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = 'data/klines/binance_klines_TRXBNB_15m_1528789500000.json'
+TEST_FILE_PATH = 'data/binance_klines_ADABNB_15m_1559347200000.json'
 COMMISSION = 0.001
-TRAIN_FACTOR = .0
 N_FEATURES = 1000
 MODEL_VERSION = '2021-01-15'
-MODEL_TO_VALIDATE = 'XLMBNB-15m'
-
-
-def fit(strat):
-    rootdir = "models/{}".format(MODEL_VERSION)
-    for use_case in ['buy', 'sell']:
-        regex = re.compile('{}-{}-.*'.format(MODEL_TO_VALIDATE, use_case))
-        for dir in os.listdir(rootdir):
-            if regex.match(dir):
-                strat.load_model(os.path.join(rootdir, dir), use_case)
-                break
-    if strat.buy_model is None:
-        logging.error('No data file matched for buy model')
-    if strat.sell_model is None:
-        logging.error('No data file matched for sell model')
 
 
 def run_simulation(klines, n_features, commission, save, validate):
     n = len(klines)
-    n_start = n if save else 0 if validate else int(n * TRAIN_FACTOR)
+    n_start = 0
     money = [0.]
     acquired = None
     previous_price = float('inf')
     sell_times = []
 
-    # from strategy.klines.deep_learning import KlinesDeepLearningStrategy
-    # strat = KlinesDeepLearningStrategy(n_features)
-    from strategy.klines.bollinger_bands import KlinesBollingerBandsStrategy
+    from strategy.bollinger_bands import KlinesBollingerBandsStrategy
     strat = KlinesBollingerBandsStrategy()
-
-    # if not validate:
-    #     klines_train = klines[0:n_start]
-    #     for use_case in ['buy', 'sell']:
-    #         strat.fit_model(klines_train, use_case)
-
-    # if save:
-    #     strat.save_models()
-    #     return
-    # elif validate:
-    #     fit(strat)
-    # else:
-    #     klines_test = klines[n_start:]
-    #     strat.evaluate_models(klines_test)
 
     for k in range(n_start + n_features, n):
         klines_ref = klines[k-n_features:k]

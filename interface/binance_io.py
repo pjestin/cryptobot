@@ -4,7 +4,7 @@ import time
 import datetime
 
 from binance.client import Client
-from model import Kline, Trade, Depth
+from model import Kline, Trade
 
 
 class BinanceInterface():
@@ -122,12 +122,3 @@ class BinanceInterface():
         if not self.my_trade_history(currency_pair):
             return None
         return self.my_trade_history(currency_pair)[-1]
-    
-    def get_current_depth(self, currency_pair, limit=None):
-        try:
-            depth_data = self.client.get_order_book(symbol=currency_pair, limit=limit)
-        except Exception as e:
-            logging.error('Error retrieving depth: {}'.format(e))
-            return None
-        depth_data['time'] = datetime.datetime.utcnow().isoformat()
-        return Depth.from_binance_json(depth_data)

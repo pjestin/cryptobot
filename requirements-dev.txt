@@ -2,5 +2,3 @@ discover
 matplotlib
 numpy
 python-binance
-tensorflow==2.4.0
-scikit-learn

@@ -5,14 +5,20 @@ import logging
 import argparse
 import math
 from datetime import datetime, date
+import json
 
 import matplotlib.pyplot as plt
 
 from interface.binance_io import BinanceInterface
 
 COMMISSION = 0.001
-CURRENCY_PAIRS = ['BNBUSDT', 'BTCUSDT', 'ETHUSDT']
+PROFILE_FILE = 'profiles.json'
 
+
+def read_currency_pairs_from_profiles():
+    with open(PROFILE_FILE, newline='') as file:
+        profiles = json.load(file)
+        return profiles.keys()
 
 def analyse_trades(currency_pairs, start_date=None):
     binance = BinanceInterface()
@@ -50,7 +56,7 @@ def analyse_trades(currency_pairs, start_date=None):
                 acquired_price = None
             previous_price = trade.price
 
-        plt.subplot(len(CURRENCY_PAIRS), 1, index + 1)
+        plt.subplot(len(currency_pairs), 1, index + 1)
         plt.title(currency_pair)
         plt.plot(t_money, money, color='blue')
         plt.plot(t_prices, prices, color='red')
@@ -68,7 +74,7 @@ def main():
     log_format = '%(asctime)-15s %(message)s'
     logging.basicConfig(format=log_format, level=logging.INFO)
     
-    currency_pairs = [args.currency_pair] if args.currency_pair else CURRENCY_PAIRS
+    currency_pairs = [args.currency_pair] if args.currency_pair else read_currency_pairs_from_profiles()
 
     analyse_trades(currency_pairs, datetime.combine(date.fromisoformat(args.date), datetime.min.time()))
 

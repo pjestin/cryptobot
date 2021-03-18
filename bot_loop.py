@@ -78,9 +78,7 @@ def run(params):
     period = params['period']
     currency_pair = params['currency_pair']
     interval = params['interval']
-    model_version = params['model_version']
     quantity = params['quantity']
-    depth_limit = params['depth_limit']
 
     binance = BinanceInterface()
 

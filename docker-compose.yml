@@ -6,15 +6,15 @@ services:
       - .:/app/cryptobot
     environment:
       - command=bot_loop.py -p adabnb
-  xlmbnb:
+  bchbnb:
     image: pjestin/cryptobot
     volumes:
       - .:/app/cryptobot
     environment:
-      - command=bot_loop.py -p xlmbnb
-  trxbnb:
+      - command=bot_loop.py -p bchbnb
+  dotbnb:
     image: pjestin/cryptobot
     volumes:
       - .:/app/cryptobot
     environment:
-      - command=bot_loop.py -p trxbnb
+      - command=bot_loop.py -p dotbnb

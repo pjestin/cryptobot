@@ -1,26 +1,21 @@
 {
     "adabnb": {
         "currency_pair": "ADABNB",
-        "quantity": 20,
+        "quantity": 150,
         "period": 60,
-        "interval": "15m",
-        "model_version": "2021-01-02",
-        "depth_limit": 1000
+        "interval": "15m"
     },
-    "xlmbnb": {
-        "currency_pair": "XLMBNB",
-        "quantity": 50,
+    "bchbnb": {
+        "currency_pair": "BCHBNB",
+        "quantity": 0.05,
         "period": 60,
-        "interval": "15m",
-        "model_version": "2021-01-15",
-        "depth_limit": 1000
+        "interval": "15m"
     },
-    "trxbnb": {
-        "currency_pair": "TRXBNB",
-        "quantity": 500,
+    "dotbnb": {
+        "currency_pair": "DOTBNB",
+        "quantity": 1,
         "period": 60,
-        "interval": "15m",
-        "model_version": "2021-01-15",
-        "depth_limit": 1000
+        "interval": "15m"
     }
 }
+

@@ -1,15 +1,14 @@
 # cryptobot
 
-This repo contains tools for backtesting and running a cryptocurrency trading bot. The bot relies on Binance, so make sure you create a .binance file at the root of the repo, which conatins your credentials on 2 lines.
+This repo contains tools for backtesting and running a cryptocurrency trading bot. The bot relies on Binance, so make sure you create a .binance file at the root of the repo, which contains your credentials on 2 lines.
 
 ## Setup
 
-Make sure you have Python 3.7 available. 
+Make sure you have Python 3.9 and Pipenv available. 
 
 ```
-python3 -m venv env
-source env/bin/activate
-pip install -r requirements-dev.txt
+pipenv install
+pipenv shell
 ```
 
 ## Tests
@@ -50,18 +49,6 @@ Run simulation:
 
 ```
 python simulate.py
-```
-
-Save ML model:
-
-```
-python simulate.py -s
-```
-
-Validate model:
-
-```
-python simulate.py -v
 ```
 
 ### Retrieve data from binance

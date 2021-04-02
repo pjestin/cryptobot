@@ -13,7 +13,7 @@
     },
     "dotbnb": {
         "currency_pair": "DOTBNB",
-        "quantity": 1,
+        "quantity": 5,
         "period": 60,
         "interval": "15m"
     }

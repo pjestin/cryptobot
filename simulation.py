@@ -18,7 +18,6 @@ from model import TradeAction
 TEST_FILE_PATH = 'data/binance_klines_ADABNB_15m_1559347200000.json'
 COMMISSION = 0.001
 N_FEATURES = 1000
-MODEL_VERSION = '2021-01-15'
 
 
 def run_simulation(klines, n_features, commission, save, validate):

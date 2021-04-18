@@ -37,7 +37,7 @@ Or configure currency pairs in `docker-compose.yml` and `profiles.json` and laun
 docker-compose up
 ```
 
-The published Docker image is designed to run on arm64 architecture. The idea is to keep a Raspberry Pi with 64bits OS running 24h a day.
+The published Docker image is designed to run on armv7 architecture. The idea is to keep a Raspberry Pi with 32-bit OS running 24h a day.
 
 ## Utilities
 

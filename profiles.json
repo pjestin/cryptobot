@@ -5,12 +5,6 @@
         "period": 60,
         "interval": "15m"
     },
-    "bchbnb": {
-        "currency_pair": "BCHBNB",
-        "quantity": 0.05,
-        "period": 60,
-        "interval": "15m"
-    },
     "dotbnb": {
         "currency_pair": "DOTBNB",
         "quantity": 5,

@@ -30,7 +30,9 @@ class TradingViewAnalysisStrategy:
             if recommendation == "STRONG_SELL":
                 return TradeAction("sell")
             potential_profit = price / previous_price - 1.0
-            if potential_profit > TAKE_PROFIT or potential_profit < STOP_LOSS:
+            if recommendation == "SELL" and (
+                potential_profit > TAKE_PROFIT or potential_profit < STOP_LOSS
+            ):
                 return TradeAction("sell")
             return TradeAction(None)
         else:

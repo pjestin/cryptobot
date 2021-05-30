@@ -4,7 +4,7 @@ This repo contains tools for backtesting and running a cryptocurrency trading bo
 
 ## Setup
 
-Make sure you have Python 3.9 and Pipenv available. 
+Make sure you have Python 3.9 and Pipenv available.
 
 ```
 pipenv install
@@ -31,7 +31,7 @@ With the BTC USDT currency pair:
 python bot_loop.py -p btcusd
 ```
 
-Or configure currency pairs in `docker-compose.yml` and `profiles.json` and launch a Docker container:
+Or configure currency pairs in `docker-compose.yml` and `config.json` and launch a Docker container:
 
 ```
 docker-compose up

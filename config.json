@@ -1,0 +1,14 @@
+{
+    "period": 60,
+    "interval": "1h",
+    "profiles": {
+        "adausdt": {
+            "symbol": "ADAUSDT",
+            "quantity": 20
+        },
+        "ethusdt": {
+            "symbol": "ETHUSDT",
+            "quantity": 0.01
+        }
+    }
+}

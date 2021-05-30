@@ -1,14 +1,14 @@
 version: "3"
 services:
-  adabnb:
+  ethusdt:
     image: pjestin/cryptobot
     volumes:
       - .:/app/cryptobot
     environment:
-      - command=bot_loop.py -p adabnb
-  dotbnb:
+      - command=bot_loop.py -p ethusdt
+  adausdt:
     image: pjestin/cryptobot
     volumes:
       - .:/app/cryptobot
     environment:
-      - command=bot_loop.py -p dotbnb
+      - command=bot_loop.py -p adausdt

@@ -11,10 +11,15 @@ name = "piwheels"
 [packages]
 numpy = "*"
 python-binance = "*"
+tradingview-ta = "*"
 
 [dev-packages]
 discover = "*"
 matplotlib = "*"
+black = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

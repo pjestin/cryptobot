@@ -22,7 +22,12 @@ class TradingViewAnalysisStrategy:
         )
 
     def decide_action(self, acquired: float, previous_price: float):
-        analysis = self.handler.get_analysis()
+        try:
+            analysis = self.handler.get_analysis()
+        except Exception as e:
+            logging.exception(e)
+            return TradeAction(None)
+
         recommendation = analysis.summary[RECOMMENDATION]
         price = analysis.indicators[CLOSE]
         logging.info("Recommendation from Trading View: {}".format(recommendation))

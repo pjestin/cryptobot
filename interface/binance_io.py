@@ -66,6 +66,7 @@ class BinanceInterface:
             ticker = self.client.get_ticker(symbol=symbol)
         except:
             logging.error("Error retrieving last price")
+            return None
         if not ticker or "lastPrice" not in ticker:
             logging.error("Price data invalid")
             return None

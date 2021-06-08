@@ -101,6 +101,10 @@ def run(params):
         begin_time = time.time()
 
         price = binance.last_price(symbol)
+
+        if not price:
+            continue
+
         logging.info(
             "Run {}; profit: {}; transactions: {}; price ratio to previous: {}; market: {}".format(
                 i,

@@ -17,6 +17,7 @@ tradingview-ta = "*"
 discover = "*"
 matplotlib = "*"
 black = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.7"

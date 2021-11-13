@@ -8,19 +8,20 @@ url = "https://www.piwheels.org/simple"
 verify_ssl = true
 name = "piwheels"
 
+[requires]
+python_version = "3.9"
+
 [packages]
 numpy = "*"
 python-binance = "*"
 tradingview-ta = "*"
+typing-extensions = "*"
 
 [dev-packages]
 discover = "*"
 matplotlib = "*"
 black = "*"
 mypy = "*"
-
-[requires]
-python_version = "3.7"
 
 [pipenv]
 allow_prereleases = true

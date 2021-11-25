@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = "data/binance_klines_ADABNB_15m_1559347200000.json"
+TEST_FILE_PATH = "data/binance_klines_ADABNB_15m_1523937600000.json"
 COMMISSION = 0.001
 N_FEATURES = 1000
 
@@ -24,9 +24,9 @@ def run_simulation(klines, n_features, commission, save, validate):
     previous_price = float("inf")
     sell_times = []
 
-    from strategy.bollinger_bands import KlinesBollingerBandsStrategy
+    from strategy.rsi_ema import KlinesRsiEmaStrategy
 
-    strat = KlinesBollingerBandsStrategy()
+    strat = KlinesRsiEmaStrategy()
 
     for k in range(n_start + n_features, n):
         klines_ref = klines[k - n_features : k]

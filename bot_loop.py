@@ -12,9 +12,10 @@ from interface.config import Config
 LOG_FILE = "log/{}.log"
 RECENT_TRANSACTION_MIN = timedelta(hours=0)
 COMMISSION = 0.001
+N_REF = 150
 
 
-def probe_and_act(strat, binance, state, price):
+def probe_and_act(strat, binance, state, klines):
     previous_price = state["previous_price"]
     acquired = state["acquired"]
     quantity = state["quantity"]
@@ -31,7 +32,7 @@ def probe_and_act(strat, binance, state, price):
     ):
         return
 
-    action = strat.decide_action(acquired, previous_price)
+    action = strat.decide_action(klines, acquired)
 
     # Buy or sell
     if not acquired and action.is_buy():
@@ -80,9 +81,9 @@ def run(params):
     )
     start_price = binance.last_price(symbol)
 
-    from strategy.tva import TradingViewAnalysisStrategy
+    from strategy.rsi_ema import KlinesRsiEmaStrategy
 
-    strat = TradingViewAnalysisStrategy(symbol, interval)
+    strat = KlinesRsiEmaStrategy()
 
     state = {
         "profit": -1.0 if acquired_price else 0.0,
@@ -100,11 +101,13 @@ def run(params):
         i += 1
         begin_time = time.time()
 
-        price = binance.last_price(symbol)
+        klines = binance.get_klines(limit=N_REF, interval=interval, symbol=symbol)
 
-        if not price:
+        if not klines:
+            logging.error("Could not retrieve klines")
             continue
 
+        price = klines[-1].close_price
         logging.info(
             "Run {}; profit: {}; transactions: {}; price ratio to previous: {}; market: {}".format(
                 i,
@@ -114,7 +117,7 @@ def run(params):
                 price / start_price - 1,
             )
         )
-        probe_and_act(strat, binance, state, price)
+        probe_and_act(strat, binance, state, klines)
 
         # Sleep if duration was shorter than period
         duration = time.time() - begin_time

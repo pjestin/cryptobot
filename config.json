@@ -1,14 +1,14 @@
 {
     "period": 60,
-    "interval": "15m",
+    "interval": "1h",
     "profiles": {
-        "adabnb": {
-            "symbol": "ADABNB",
-            "quantity": 30
-        },
         "bnbeth": {
             "symbol": "BNBETH",
-            "quantity": 0.05
+            "quantity": 0.1
+        },
+        "ethusdt": {
+            "symbol": "ETHUSDT",
+            "quantity": 0.01
         }
     }
 }

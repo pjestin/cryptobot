@@ -1,12 +1,11 @@
-FROM arm32v7/python:3.9-slim-bullseye
+FROM python:3.11-slim-bookworm
 WORKDIR /app/cryptobot
 RUN apt-get update
 RUN apt-get install -y build-essential libatlas-base-dev
 RUN adduser --uid 1000 --shell /bin/bash cryptouser
 USER cryptouser
-COPY Pipfile .
-COPY Pipfile.lock .
-RUN python -m pip install --upgrade pip pipenv
-RUN python -m pipenv install --deploy
+COPY requirements.txt .
+RUN python -m pip install --upgrade pip
+RUN python -m pip install -r requirements.txt
 ENV command --version
-CMD python -m pipenv run python ${command}
+CMD python ${command}

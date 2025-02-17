@@ -81,9 +81,9 @@ def run(params):
     )
     start_price = binance.last_price(symbol)
 
-    from strategy.rsi_ema import KlinesRsiEmaStrategy
+    from strategy.avg_log_ratio import KlinesAvgLogRatioStrategy
 
-    strat = KlinesRsiEmaStrategy()
+    strat = KlinesAvgLogRatioStrategy()
 
     state = {
         "profit": -1.0 if acquired_price else 0.0,

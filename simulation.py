@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 from interface import read_data
 from model import TradeAction
 
-TEST_FILE_PATH = "data/binance_klines_ADABNB_15m_1523937600000.json"
+#TEST_FILE_PATH = "data/binance_klines_ETHUSDT_1h_1676660400000.json"
+TEST_FILE_PATH = "data/binance_klines_BTCUSDT_1h_1676664000000.json"
 COMMISSION = 0.001
 N_FEATURES = 1000
 
@@ -24,9 +25,9 @@ def run_simulation(klines, n_features, commission, save, validate):
     previous_price = float("inf")
     sell_times = []
 
-    from strategy.rsi_ema import KlinesRsiEmaStrategy
+    from strategy.avg_log_ratio import KlinesAvgLogRatioStrategy
 
-    strat = KlinesRsiEmaStrategy()
+    strat = KlinesAvgLogRatioStrategy()
 
     for k in range(n_start + n_features, n):
         klines_ref = klines[k - n_features : k]
@@ -60,7 +61,7 @@ def run_simulation(klines, n_features, commission, save, validate):
         milliseconds=(klines[-1].close_time - klines[n_start].close_time)
     )
     avg_per_month = money[-1] * timedelta(days=30) / duration
-    avg_per_year_multiplier = (avg_per_month + 1) ** 12
+    avg_per_year = (avg_per_month + 1.) ** 12 - 1.
     logging.info(
         "Money: {}; Number of transactions: {}; Market: {}".format(
             money[-1], 2 * len(money), market
@@ -68,7 +69,7 @@ def run_simulation(klines, n_features, commission, save, validate):
     )
     logging.info(
         "Duration: {}; average money per month: {}; per year: {}".format(
-            duration, avg_per_month, avg_per_year_multiplier
+            duration, avg_per_month, avg_per_year
         )
     )
 
@@ -95,6 +96,7 @@ def simulate(**kwargs):
     parser = argparse.ArgumentParser(
         description="Simulation on crypto currency trading strategies"
     )
+    parser.add_argument("-f", "--file", help="Test file path")
     parser.add_argument("-s", "--save", help="Save model", action="store_true")
     parser.add_argument("-v", "--validate", help="Validate model", action="store_true")
     args = parser.parse_args()
@@ -105,7 +107,10 @@ def simulate(**kwargs):
     if args.save and args.validate:
         raise RuntimeError("Cant save and validate")
 
-    klines = read_data.read_klines_from_json(file_path=TEST_FILE_PATH)
+    if not args.file:
+        raise RuntimeError("No test file path")
+
+    klines = read_data.read_klines_from_json(file_path=args.file)
 
     run_simulation(
         klines,

@@ -3,16 +3,33 @@
 
 import time
 import argparse
+import json
 import logging
 from datetime import datetime, timedelta
 
 from interface.binance_io import BinanceInterface
 from interface.config import Config
 
-LOG_FILE = "log/{}.log"
-RECENT_TRANSACTION_MIN = timedelta(hours=0)
+STATE_FILE = "state/{}.json"
 COMMISSION = 0.001
 N_REF = 150
+
+
+def save_state(profile_name, state):
+    try:
+        with open(STATE_FILE.format(profile_name), "w") as f:
+            json.dump(state, f)
+    except Exception as e:
+        logging.error(f"Unable to write state file: {e}")
+
+
+def load_state(profile_name):
+    try:
+        with open(STATE_FILE.format(profile_name), "r") as f:
+            return json.load(f)
+    except Exception as e:
+        logging.error(f"Unable to load state file: {e}")
+        return None
 
 
 def probe_and_act(strat, binance, state, klines):
@@ -25,14 +42,8 @@ def probe_and_act(strat, binance, state, klines):
     simulate = state["simulate"]
     symbol = state["symbol"]
 
-    # Skip if recent transaction
-    if (
-        state["last_transac_time"]
-        and datetime.utcnow() - state["last_transac_time"] < RECENT_TRANSACTION_MIN
-    ):
-        return
-
     action = strat.decide_action(klines, acquired)
+    price = klines[-1].close_price
 
     # Buy or sell
     if not acquired and action.is_buy():
@@ -45,7 +56,6 @@ def probe_and_act(strat, binance, state, klines):
         logging.info("Buying {} at {}; profit: {}".format(buy_quantity, price, profit))
         state["previous_price"] = price
         state["nb_transactions"] += 1
-        state["last_transac_time"] = datetime.utcnow()
         state["buy_quantity"] = buy_quantity
         state["acquired"] = (1 - commission) / price
         state["profit"] -= 1.0
@@ -58,13 +68,14 @@ def probe_and_act(strat, binance, state, klines):
         logging.info("Selling {} at {}; profit: {}".format(buy_quantity, price, profit))
         state["previous_price"] = price
         state["nb_transactions"] += 1
-        state["last_transac_time"] = datetime.utcnow()
         state["buy_quantity"] = None
         state["acquired"] = None
         state["profit"] += (1 - commission) * acquired * price
 
 
 def run(params):
+    state = load_state(params["profile_name"])
+
     period = params["period"]
     symbol = params["symbol"]
     interval = params["interval"]
@@ -85,16 +96,16 @@ def run(params):
 
     strat = KlinesAvgLogRatioStrategy()
 
-    state = {
-        "profit": -1.0 if acquired_price else 0.0,
-        "previous_price": acquired_price if acquired_price else float("inf"),
-        "nb_transactions": 0,
-        "last_transac_time": None,
-        "acquired": 1.0 / acquired_price if acquired_price else None,
-        "buy_quantity": buy_quantity,
-    }
-
-    state = {**params, **state}
+    if not state:
+        state = {
+            "profit": -1.0 if acquired_price else 0.0,
+            "previous_price": acquired_price if acquired_price else float("inf"),
+            "nb_transactions": 0,
+            "acquired": 1.0 / acquired_price if acquired_price else None,
+            "buy_quantity": buy_quantity,
+            "start_price": start_price,
+        }
+        state = {**params, **state}
 
     i = 0
     while True:
@@ -114,10 +125,12 @@ def run(params):
                 state["profit"],
                 state["nb_transactions"],
                 price / state["previous_price"],
-                price / start_price - 1,
+                price / state["start_price"] - 1,
             )
         )
         probe_and_act(strat, binance, state, klines)
+
+        save_state(params["profile_name"], state)
 
         # Sleep if duration was shorter than period
         duration = time.time() - begin_time
@@ -151,6 +164,7 @@ def main():
         "quantity": profile.quantity,
         "interval": config.interval,
         "period": config.period,
+        "profile_name": args.profile,
     }
 
     run(params)

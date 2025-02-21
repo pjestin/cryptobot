@@ -109,3 +109,4 @@ venv.bak/
 .binance
 data/*
 models/*
+state/*

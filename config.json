@@ -1,5 +1,5 @@
 {
-    "period": 60,
+    "period": 600,
     "interval": "1h",
     "profiles": {
         "bnbeth": {
